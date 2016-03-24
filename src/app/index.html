@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html ng-app="pancan2App">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>pancan2App</title>
+
+    <!-- inject:vendor:css -->
+    <link rel="stylesheet" href="/angular-ui-grid/ui-grid.css">
+    <link rel="stylesheet" href="/ngDialog/css/ngDialog.css">
+    <link rel="stylesheet" href="/ngDialog/css/ngDialog-theme-default.css">
+    <link rel="stylesheet" href="/fontawesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/angular-awesome-slider/dist/css/angular-awesome-slider.min.css">
+    <link rel="stylesheet" href="/colorbrewer2/colorbrewer.css">
+    <link rel="stylesheet" href="/angular-bootstrap-colorpicker/css/colorpicker.css">
+    <!-- endinject -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/components/vaf-scatterplot/vafScatterplot.css">
+    <link rel="stylesheet" href="/css/figures/linkedVaf/linkedVaf.css">
+    <!-- endinject -->
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">AML31 Figures</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li ui-sref-active><a ui-sref="linkedVaf">Linked VAFs</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <ui-view></ui-view>
+        </div>
+      </div>
+    </div>
+
+    <!-- inject:vendor:js -->
+    <script src="/angular/angular.js"></script>
+    <script src="/angular-route/angular-route.js"></script>
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/angular-resource/angular-resource.js"></script>
+    <script src="/angular-ui-grid/ui-grid.js"></script>
+    <script src="/ngDialog/js/ngDialog.js"></script>
+    <script src="/d3/d3.js"></script>
+    <script src="/ui-router/release/angular-ui-router.js"></script>
+    <script src="/lodash/lodash.js"></script>
+    <script src="/api-check/dist/api-check.js"></script>
+    <script src="/angular-awesome-slider/dist/angular-awesome-slider.min.js"></script>
+    <script src="/d3-transform/src/d3-transform.js"></script>
+    <script src="/d3-legend/d3-legend.js"></script>
+    <script src="/colorbrewer2/colorbrewer.js"></script>
+    <script src="/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/angular-formly/dist/formly.js"></script>
+    <script src="/angular-formly-templates-bootstrap/dist/angular-formly-templates-bootstrap.js"></script>
+    <!-- endinject -->
+    <!-- inject:js -->
+    <script src="/app.js"></script>
+    <script src="/figures/linkedVaf/linkedVaf.js"></script>
+    <script src="/components/vaf-scatterplot/vafScatterplot.js"></script>
+    <script src="/services/lodashService.js"></script>
+    <script src="/services/d3Service.js"></script>
+    <script src="/forms/formlyConfig.js"></script>
+    <script src="/filters/filters.js"></script>
+    <script src="/pancan2-figures-app-templates.js"></script>
+    <!-- endinject -->
+  </body>
+</html>

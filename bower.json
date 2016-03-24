@@ -1,0 +1,54 @@
+{
+  "name": "pancan2-figures-app",
+  "main": [
+    "/dist/pancan2-figures-app.min.js",
+    "/dist/pancan2-figures-app.min.css"
+  ],
+  "version": "0.1.0",
+  "description": "TODO",
+  "authors": [
+    "Joshua F. McMichael"
+  ],
+  "ignore": [
+    "**/.*",
+    "package.json",
+    "klei.json",
+    "gulpfile.js",
+    "node_modules",
+    "bower_components",
+    "src"
+  ],
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-route": "~1.2.14",
+    "bootstrap": "~3.3.1",
+    "angular-resource": "~1.3.10",
+    "angular-ui-grid": "~3.0.0-rc.19",
+    "ngDialog": "~0.3.11",
+    "fontawesome": "~4.3.0",
+    "d3": "~3.5.6",
+    "ui-router": "~0.2.15",
+    "lodash": "~3.10.0",
+    "angular-formly": "~6.18.1",
+    "angular-formly-templates-bootstrap": "~5.0.2",
+    "angular-awesome-slider": "~2.3.8",
+    "d3-transform": "*",
+    "d3-legend": "https://github.com/susielu/d3-legend.git",
+    "colorbrewer2": "*",
+    "ui-grid": "~3.0.1",
+    "angular-bootstrap-colorpicker": "~3.0.18"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.29"
+  },
+  "overrides": {
+    "d3-legend": {
+      "main": [
+        "d3-legend.js"
+      ]
+    }
+  },
+  "resolutions": {
+    "angular": "~1.4.0"
+  }
+}
