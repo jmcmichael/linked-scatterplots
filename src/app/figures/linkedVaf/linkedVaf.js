@@ -123,7 +123,7 @@
     }
 
     function parseAnnotation(ann) {
-      _(ann.split(';'))
+      return _(ann.split(';'))
         .map(function(s) { return s.split(':');})
         .zipObject()
         .value()
