@@ -20,9 +20,14 @@
     var vm = $scope.vm = {};
     var rawData = [];
 
-    var vafWidth = 1280,
-      vafHeight = 1024,
-      vafMargin = 20,
+    var vafWidth = 400,
+      vafHeight = 400,
+      vafMargin = {
+        top: 0,
+        right: 0,
+        bottom: 40,
+        left: 40
+      },
       vafXMin = 0,
       vafXMax = 100,
       vafYMin = 0,
@@ -39,7 +44,8 @@
       xMax: vafXMax,
       yMin: vafYMin,
       yMax: vafYMax,
-      id: 'vaf1'
+      id: 'vaf1',
+      data: []
     };
 
     vm.vaf2Options = {
@@ -50,7 +56,8 @@
       xMax: vafXMax,
       yMin: vafYMin,
       yMax: vafYMax,
-      id: 'vaf2'
+      id: 'vaf2',
+      data: []
     };
 
     vm.vaf3Options = {
@@ -61,14 +68,16 @@
       xMax: vafXMax,
       yMin: vafYMin,
       yMax: vafYMax,
-      id: 'vaf3'
+      id: 'vaf3',
+      data: []
     };
 
     vm.parallelCoordsOptions = {
       width: 1280,
       height: 500,
       margin: 20,
-      id: 'parallelCoords'
+      id: 'parallelCoords',
+      data: []
     };
 
     d3.tsv("data/input.aml31_v1a.tsv", function(data) {
@@ -111,12 +120,12 @@
     function getParallelCoordsData(data) {
       return _.map(data, function(d) {
         return {
-          vaf1: d.vaf1,
-          vaf2: d.vaf2,
-          vaf3: d.vaf3,
-          pos: d.pos,
+          vaf1: Number(d.vaf1),
+          vaf2: Number(d.vaf2),
+          vaf3: Number(d.vaf3),
+          pos: Number(d.pos),
           basechange: d.basechange,
-          cluster: d.cluster,
+          cluster: Number(d.cluster),
           annotation: parseAnnotation(d.annotation)
         }
       });
