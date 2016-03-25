@@ -13,14 +13,22 @@
         options: '='
       },
       templateUrl: 'components/vaf-scatterplot/vafScatterplot.tpl.html',
+      link: vafScatterplotLink,
       controller: vafScatterplotController
 
     };
     return directive;
   }
 
+  function vafScatterplotLink(scope, elem, attrs) {
+    scope.elem = elem;
+  }
+
   // @ngInject
-  function vafScatterplotController($scope, $timeout, $element, d3, _) {
+  function vafScatterplotController($scope, $element, d3, _) {
     console.log('vafScatterplotController loaded.');
+
+    var svg = d3.select($element.find('svg')[0]);
+
   }
 })();
