@@ -56,11 +56,12 @@
 
         var xAxis = chart.addMeasureAxis('x', 'x');
         var yAxis = chart.addMeasureAxis('y', 'y');
+        var colorAxis = chart.addMeasureAxis('color', 'cluster')
 
-        xAxis.overrideMax = 100;
-        yAxis.overrideMax = 100;
+        xAxis.overrideMax = options.xMax;
+        yAxis.overrideMax = options.yMax;
 
-        var series = chart.addSeries(['x', 'y'], dimple.plot.bubble);
+        var series = chart.addSeries(['x', 'y', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
         var getText = function (data, options, d) {
           var item = _.find(data, {x: d.xValue, y: d.yValue});
