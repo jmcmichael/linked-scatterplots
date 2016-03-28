@@ -62,24 +62,28 @@
 
         var series = chart.addSeries(['x', 'y'], dimple.plot.bubble);
 
-        var getText = function (data, d) {
-          var i,
-            tooltip = ['test'];
+        var getText = function (data, options, d) {
+          var item = _.find(data, {x: d.xValue, y: d.yValue});
+          var tipObj = {};
 
-          //for (i = 0; i < data.length; i += 1) {
-          //  if (d3.time.format("%Y-%m-%d")(d.x) === data[i].request_date) {
-          //    tooltip.push("Project ID: " + data[i].project_id);
-          //    tooltip.push("Service Duration: " + data[i].service_durations_days + " day(s)");
-          //    tooltip.push("Days Overdue: " + data[i].days_overdue);
-          //    tooltip.push("Active Services: " + data[i].active_services);
-          //    tooltip.push("Project Status: " + data[i].project_status);
-          //  }
-          //}
-          return tooltip;
+          tipObj[options.xAxis] = item.x;
+          tipObj[options.yAxis] = item.y;
+
+          tipObj['Base Change'] = item.basechange;
+          tipObj['Cluster'] = item.cluster;
+          tipObj['Position'] = item.pos;
+
+          _.forEach(item.annotation, function(val,key){
+            tipObj[_.capitalize(key)] = val;
+          });
+
+          return _.map(tipObj, function(val, key) {
+            return [key, val].join(': ');
+          });
+
         };
 
-
-        series.getTooltipText = _.partial(getText, data);
+        series.getTooltipText = _.partial(getText, data, options);
 
         chart.draw();
 

@@ -38,8 +38,8 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
-      xAxis: 'Tumor',
-      yAxis: 'Relapse',
+      xAxis: 'Tumor VAF',
+      yAxis: 'Relapse VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -52,6 +52,8 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
+      xAxis: 'Tumor VAF',
+      yAxis: 'Allo VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -64,6 +66,8 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
+      xAxis: 'Relapse VAF',
+      yAxis: 'Allo VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -107,11 +111,11 @@
 
       return _.map(data, function(d) {
         return {
-          x: d[specs[chart].x],
-          y: d[specs[chart].y],
-          pos: d.pos,
+          x: Number(d[specs[chart].x]),
+          y: Number(d[specs[chart].y]),
+          pos: Number(d.pos),
           basechange: d.basechange,
-          cluster: d.cluster,
+          cluster: Number(d.cluster),
           annotation: parseAnnotation(d.annotation)
         }
       });
