@@ -33,27 +33,59 @@
       .attr('height', options.height)
       .attr('id', options.id);
 
+    svg.append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("fill", "white");
+
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
         var chart = new dimple.chart(svg, options.data);
 
         chart.setBounds(
-          options.margin.left,
-          options.margin.top,
           options.height - options.margin.top - options.margin.bottom,
           options.width - options.margin.left - options.margin.right
         );
 
-        // axis data
-        var x = chart.addMeasureAxis('x', 'x');
-        var y = chart.addMeasureAxis('y', 'y');
+        chart.setMargins(
+          options.margin.left,
+          options.margin.top,
+          options.margin.right,
+          options.margin.bottom
+        );
 
-        chart.addSeries(['x', 'y'], dimple.plot.bubble);
+        var xAxis = chart.addMeasureAxis('x', 'x');
+        var yAxis = chart.addMeasureAxis('y', 'y');
+
+        xAxis.overrideMax = 100;
+        yAxis.overrideMax = 100;
+
+        var series = chart.addSeries(['x', 'y'], dimple.plot.bubble);
+
+        var getText = function (data, d) {
+          var i,
+            tooltip = ['test'];
+
+          //for (i = 0; i < data.length; i += 1) {
+          //  if (d3.time.format("%Y-%m-%d")(d.x) === data[i].request_date) {
+          //    tooltip.push("Project ID: " + data[i].project_id);
+          //    tooltip.push("Service Duration: " + data[i].service_durations_days + " day(s)");
+          //    tooltip.push("Days Overdue: " + data[i].days_overdue);
+          //    tooltip.push("Active Services: " + data[i].active_services);
+          //    tooltip.push("Project Status: " + data[i].project_status);
+          //  }
+          //}
+          return tooltip;
+        };
+
+
+        series.getTooltipText = _.partial(getText, data);
+
         chart.draw();
 
         // axis titles
-        x.titleShape.text(options.xAxis);
-        y.titleShape.text(options.yAxis);
+        xAxis.titleShape.text(options.xAxis);
+        yAxis.titleShape.text(options.yAxis);
       }
     });
 
