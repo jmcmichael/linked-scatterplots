@@ -37,11 +37,14 @@
     //  .attr("width", "100%")
     //  .attr("height", "100%")
     //  .attr("fill", "white");
+    var chart = new dimple.chart(svg, options.data);
+
+    $scope.chart = chart;
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
-        var chart = new dimple.chart(svg, options.data);
 
+        chart.data = data;
         chart.setBounds(
           options.height - options.margin.top - options.margin.bottom,
           options.width - options.margin.left - options.margin.right
@@ -63,7 +66,18 @@
 
         var series = chart.addSeries(['x', 'y', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
-        var getText = function (data, options, d) {
+        series.addEventHandler('click', function(e) {
+          $scope.$emit('vafClick', e, options.id);
+        });
+
+        $scope.$on('highlightPoint', function(ngEvent, fromChart, seriesValue) {
+          if (fromChart != options.id) {
+            console.log('Highlighting point: ' + seriesValue);
+          }
+        });
+
+
+        var getTooltipText = function (data, options, d) {
           var item = _.find(data, {x: d.xValue, y: d.yValue});
           var tipObj = {};
 
@@ -84,7 +98,7 @@
 
         };
 
-        series.getTooltipText = _.partial(getText, data, options);
+        series.getTooltipText = _.partial(getTooltipText, data, options);
 
         chart.draw();
 

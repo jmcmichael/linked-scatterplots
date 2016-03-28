@@ -3,7 +3,6 @@
     <div class="col-xs-4">
       <div class="chart-container">
         <vaf-scatterplot
-          chart-id="'vaf1'"
           options="vm.vaf1Options">
         </vaf-scatterplot>
       </div>
@@ -11,7 +10,6 @@
     <div class="col-xs-4">
       <div class="chart-container">
         <vaf-scatterplot
-          chart-id="'vaf2'"
           options="vm.vaf2Options">
         </vaf-scatterplot>
 
@@ -20,7 +18,6 @@
     <div class="col-xs-4">
       <div class="chart-container">
         <vaf-scatterplot
-          chart-id="'vaf3'"
           options="vm.vaf3Options">
         </vaf-scatterplot>
       </div>
@@ -28,7 +25,8 @@
   </div>
   <div class="row">
     <div class="col-xs-12">
-      <h3>Parallel Coordinates Chart</h3>
+      <p>Clicked Element:</p>
+      <pre ng-bind="vm.highlightElement"></pre>
     </div>
   </div>
 </div>

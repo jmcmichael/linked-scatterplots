@@ -15,10 +15,17 @@
   }
 
   // @ngInject
-  function linkedVafController($scope, d3, _) {
+  function linkedVafController($scope, $rootScope, d3, _) {
     console.log('linkedVafController loaded.');
     var vm = $scope.vm = {};
+
+    vm.chart1 = {};
+    vm.chart2 = {};
+    vm.chart3 = {};
+
     var rawData = [];
+
+    vm.highlightElement = '';
 
     var vafWidth = 400,
       vafHeight = 400,
@@ -91,6 +98,11 @@
       vm.vaf3Options.data = getVafData(data, 3);
 
       vm.parallelCoordsOptions.data = getParallelCoordsData(data);
+    });
+
+    $scope.$on('vafClick', function(ngEvent, chartEvent, chartId) {
+      console.log('Clicked chart ' + chartId + '; seriesValue: ' + chartEvent.seriesValue);
+      $rootScope.$broadcast('highlightPoint', chartId, chartEvent.seriesValue);
     });
 
     function getVafData(data, chart) {
