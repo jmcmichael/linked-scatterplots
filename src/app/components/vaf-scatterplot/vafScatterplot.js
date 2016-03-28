@@ -43,10 +43,17 @@
           options.height - options.margin.top - options.margin.bottom,
           options.width - options.margin.left - options.margin.right
         );
-        chart.addMeasureAxis('x', 'x');
-        chart.addMeasureAxis('y', 'y');
+
+        // axis data
+        var x = chart.addMeasureAxis('x', 'x');
+        var y = chart.addMeasureAxis('y', 'y');
+
         chart.addSeries(['x', 'y'], dimple.plot.bubble);
         chart.draw();
+
+        // axis titles
+        x.titleShape.text(options.xAxis);
+        y.titleShape.text(options.yAxis);
       }
     });
 
