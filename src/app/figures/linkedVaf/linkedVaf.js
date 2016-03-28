@@ -23,10 +23,10 @@
     var vafWidth = 400,
       vafHeight = 400,
       vafMargin = {
-        top: 10,
+        top: 15,
         right: 10,
         bottom: 40,
-        left: 50
+        left: 55
       },
       vafXMin = 0,
       vafXMax = 100,

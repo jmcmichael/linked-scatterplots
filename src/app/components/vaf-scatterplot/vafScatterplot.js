@@ -33,10 +33,10 @@
       .attr('height', options.height)
       .attr('id', options.id);
 
-    svg.append("rect")
-      .attr("width", "100%")
-      .attr("height", "100%")
-      .attr("fill", "white");
+    //svg.append("rect")
+    //  .attr("width", "100%")
+    //  .attr("height", "100%")
+    //  .attr("fill", "white");
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {

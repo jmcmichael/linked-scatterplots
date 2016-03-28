@@ -1,8 +1,8 @@
 {
-  "name": "pancan2-figures-app",
+  "name": "linked-scatterplots",
   "main": [
-    "/dist/pancan2-figures-app.min.js",
-    "/dist/pancan2-figures-app.min.css"
+    "/dist/linked-scatterplots.min.js",
+    "/dist/linked-scatterplots.min.css"
   ],
   "version": "0.1.0",
   "description": "TODO",
