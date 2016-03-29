@@ -102,13 +102,6 @@
       vm.parallelCoordsOptions.data = getParallelCoordsData(data);
     });
 
-    $scope.$on('vafClick', function(ngEvent, chartId, keys) {
-      var selector = '.' + dimple._createClass(keys).split(' ').join('.');
-      console.log('Clicked chart ' + chartId + '; selector: ' + selector);
-      $rootScope.$applyAsync();
-      $rootScope.$broadcast('showTooltip', chartId, selector);
-    });
-
     function getVafData(data, chart) {
       var specs = {
         1: {

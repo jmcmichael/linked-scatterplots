@@ -23,7 +23,7 @@
   }
 
   // @ngInject
-  function vafScatterplotController($scope, $element, d3, dimple, _) {
+  function vafScatterplotController($scope, $rootScope, $element, d3, dimple, _) {
     console.log('vafScatterplotController loaded.');
     var options = $scope.options;
 
@@ -33,13 +33,13 @@
       .attr('height', options.height)
       .attr('id', options.id);
 
-    //svg.append("rect")
-    //  .attr("width", "100%")
-    //  .attr("height", "100%")
-    //  .attr("fill", "white");
     var chart = new dimple.chart(svg, options.data);
 
+    var currentOverStyles = {};
+
     $scope.chart = chart;
+
+
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
@@ -59,56 +59,65 @@
 
         var xAxis = chart.addMeasureAxis('x', 'x');
         var yAxis = chart.addMeasureAxis('y', 'y');
-        var colorAxis = chart.addMeasureAxis('color', 'cluster')
+        var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
         xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;
 
         var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
-        var clickHandler = function(chartId, event){
-          $scope.$emit('vafClick', chartId, _.slice(event.seriesValue, 2, 5));
+        var mouseOverHandler = function(chartId, event){
+          var keys = _.slice(event.seriesValue, 2, 5);
+          var selector = '.' + dimple._createClass(keys).split(' ').join('.')
+          $rootScope.$broadcast('vafBubbleOver', event, chartId, selector);
         };
 
-        series.addEventHandler('click', _.partial(clickHandler, options.id));
+        var mouseLeaveHandler = function(chartId, event){
+          // NOTE: it looks like _.showPointTooltip is expecting a *d3* event as 'e', not a dimple event
+          // see line 3693 in dimple.latest.js
+          // so instead of implementing this as a series.addEventHandler, we need to use d3.select
+          // to add a mouseover event that calls _.showPointTooltip, and eimits the $rootScope event.
+          var keys = _.slice(event.seriesValue, 2, 5);
+          var selector = '.' + dimple._createClass(keys).split(' ').join('.')
+          $rootScope.$broadcast('vafBubbleLeave', event, chartId, selector);
+        };
+
+        series.addEventHandler('mouseenter', _.partial(mouseOverHandler, options.id));
+        series.addEventHandler('mouseleave', _.partial(mouseLeaveHandler, options.id));
 
         //series.addEventHandler('click', function(e) {
         //  $scope.$emit('vafClick', options.id, e, _.slice(e.seriesValue, 2, 5));
         //});
 
-        $scope.$on('showTooltip', function(ngEvent, fromChart, selector) {
-          if (fromChart != options.id) {
-            console.log('Highlighting point: ' + selector);
-            svg.selectAll(selector)
-              .style("stroke", "darkred")
-              .style("fill", "red")
-              .attr("r", 10);
-          }
-        });
+        var vafBubbleOver = function(ngEvent, dimpleEvent, chartId, selector, chart, series) {
+          console.log('+++ Bubble Over caught: ' + selector);
+          var currentNode = svg.selectAll(selector).node();
 
+          currentOverStyles = {
+            stroke: currentNode.attributes.stroke.nodeValue,
+            fill: currentNode.attributes.fill.nodeValue,
+            r: currentNode.attributes.r.nodeValue
+          };
 
-        var getTooltipText = function (data, options, d) {
-          var item = _.find(data, {x: d.xValue, y: d.yValue});
-          var tipObj = {};
-
-          tipObj[options.xAxis] = item.x;
-          tipObj[options.yAxis] = item.y;
-
-          tipObj['Chromosome'] = item.chr;
-          tipObj['Position'] = item.pos;
-          tipObj['Base Change'] = item.basechange;
-          tipObj['Cluster'] = item.cluster;
-
-
-          _.forEach(item.annotation, function(val,key){
-            tipObj[_.capitalize(key)] = val;
-          });
-
-          return _.map(tipObj, function(val, key) {
-            return [key, val].join(': ');
-          });
+          svg.selectAll(selector)
+            .style("stroke", "darkred")
+            .style("fill", "red")
+            .attr("r", 10);
 
         };
+
+        $scope.$on('vafBubbleOver', _.partialRight(vafBubbleOver, chart, series));
+
+        $scope.$on('vafBubbleLeave', function(ngEvent, dimpleEvent, fromChartId, selector) {
+          console.log('--- Bubble Leave caught: ' + selector);
+
+          svg.selectAll(selector)
+            .style("stroke", currentOverStyles.stroke)
+            .style("fill", currentOverStyles.fill)
+            .attr("r", currentOverStyles.r);
+          currentOverStyles = {};
+
+        });
 
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
@@ -117,9 +126,39 @@
         // axis titles
         xAxis.titleShape.text(options.xAxis);
         yAxis.titleShape.text(options.yAxis);
+
       }
     });
 
+
+    function simulateMouseEvent(element, event){
+      var evt = document.createEvent('SVGEvents');
+      evt.initEvent(event,false,true);
+      return !element.dispatchEvent(evt); //Indicate if `preventDefault` was called during handling
+    }
+
+    function getTooltipText(data, options, d) {
+      var item = _.find(data, {x: d.xValue, y: d.yValue});
+      var tipObj = {};
+
+      tipObj[options.xAxis] = item.x;
+      tipObj[options.yAxis] = item.y;
+
+      tipObj['Chromosome'] = item.chr;
+      tipObj['Position'] = item.pos;
+      tipObj['Base Change'] = item.basechange;
+      tipObj['Cluster'] = item.cluster;
+
+
+      _.forEach(item.annotation, function(val,key){
+        tipObj[_.capitalize(key)] = val;
+      });
+
+      return _.map(tipObj, function(val, key) {
+        return [key, val].join(': ');
+      });
+
+    }
 
     //d3.tsv("/data/example_data.tsv", function (data) {
     //  data = dimple.filterData(data, "Date", "01/12/2012");

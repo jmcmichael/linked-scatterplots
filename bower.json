@@ -48,8 +48,12 @@
       "main": [
         "d3-legend.js"
       ]
+    },
+    "dimple": {
+      "main": "dist/dimple.latest.js"
     }
   },
+
   "resolutions": {
     "angular": "~1.4.0"
   }
