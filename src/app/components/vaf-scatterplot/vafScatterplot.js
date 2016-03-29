@@ -64,15 +64,25 @@
         xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;
 
-        var series = chart.addSeries(['x', 'y', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
+        var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
-        series.addEventHandler('click', function(e) {
-          $scope.$emit('vafClick', e, options.id);
-        });
+        var clickHandler = function(chartId, chart, event){
+          $scope.$emit('vafClick', chartId, chart, event, _.slice(event.seriesValue, 2, 5));
+        };
 
-        $scope.$on('highlightPoint', function(ngEvent, fromChart, seriesValue) {
+        series.addEventHandler('click', _.partial(clickHandler, options.id, chart));
+
+        //series.addEventHandler('click', function(e) {
+        //  $scope.$emit('vafClick', options.id, e, _.slice(e.seriesValue, 2, 5));
+        //});
+
+        $scope.$on('highlightPoint', function(ngEvent, fromChart, selector) {
           if (fromChart != options.id) {
-            console.log('Highlighting point: ' + seriesValue);
+            console.log('Highlighting point: ' + selector);
+            svg.selectAll(selector)
+              .style("stroke", "darkred")
+              .style("fill", "red")
+              .attr("r", 10);
           }
         });
 
@@ -84,9 +94,11 @@
           tipObj[options.xAxis] = item.x;
           tipObj[options.yAxis] = item.y;
 
+          tipObj['Chromosome'] = item.chr;
+          tipObj['Position'] = item.pos;
           tipObj['Base Change'] = item.basechange;
           tipObj['Cluster'] = item.cluster;
-          tipObj['Position'] = item.pos;
+
 
           _.forEach(item.annotation, function(val,key){
             tipObj[_.capitalize(key)] = val;

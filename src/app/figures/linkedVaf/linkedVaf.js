@@ -25,7 +25,9 @@
 
     var rawData = [];
 
-    vm.highlightElement = '';
+    vm.seriesValue = [];
+    vm.elementKeys = [];
+    vm.selector = '';
 
     var vafWidth = 400,
       vafHeight = 400,
@@ -100,9 +102,11 @@
       vm.parallelCoordsOptions.data = getParallelCoordsData(data);
     });
 
-    $scope.$on('vafClick', function(ngEvent, chartEvent, chartId) {
+    $scope.$on('vafClick', function(ngEvent, chartId, chart, chartEvent, keys) {
       console.log('Clicked chart ' + chartId + '; seriesValue: ' + chartEvent.seriesValue);
-      $rootScope.$broadcast('highlightPoint', chartId, chartEvent.seriesValue);
+      var selector = '.' + dimple._createClass(keys).split(' ').join('.');
+      $rootScope.$applyAsync();
+      $rootScope.$broadcast('highlightPoint', chartId, selector);
     });
 
     function getVafData(data, chart) {
@@ -125,6 +129,7 @@
         return {
           x: Number(d[specs[chart].x]),
           y: Number(d[specs[chart].y]),
+          chr: Number(d.chr),
           pos: Number(d.pos),
           basechange: d.basechange,
           cluster: Number(d.cluster),

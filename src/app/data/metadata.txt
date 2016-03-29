@@ -1,0 +1,4 @@
+column_label	plot_label	timepoint
+vaf1	Tumor	0
+vaf2	Relapse 1	512
+vaf3	Relapse 2	3269
