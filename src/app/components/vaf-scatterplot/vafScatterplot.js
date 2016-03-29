@@ -66,17 +66,17 @@
 
         var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
-        var clickHandler = function(chartId, chart, event){
-          $scope.$emit('vafClick', chartId, chart, event, _.slice(event.seriesValue, 2, 5));
+        var clickHandler = function(chartId, event){
+          $scope.$emit('vafClick', chartId, _.slice(event.seriesValue, 2, 5));
         };
 
-        series.addEventHandler('click', _.partial(clickHandler, options.id, chart));
+        series.addEventHandler('click', _.partial(clickHandler, options.id));
 
         //series.addEventHandler('click', function(e) {
         //  $scope.$emit('vafClick', options.id, e, _.slice(e.seriesValue, 2, 5));
         //});
 
-        $scope.$on('highlightPoint', function(ngEvent, fromChart, selector) {
+        $scope.$on('showTooltip', function(ngEvent, fromChart, selector) {
           if (fromChart != options.id) {
             console.log('Highlighting point: ' + selector);
             svg.selectAll(selector)
