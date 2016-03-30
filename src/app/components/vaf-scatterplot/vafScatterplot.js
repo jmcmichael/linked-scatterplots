@@ -66,70 +66,55 @@
 
         var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
 
-        var mouseOverHandler = function(chartId, event){
-          var keys = _.slice(event.seriesValue, 2, 5);
-          var selector = '.' + dimple._createClass(keys).split(' ').join('.')
-          $rootScope.$broadcast('vafBubbleOver', event, chartId, selector);
-        };
-
-        var mouseLeaveHandler = function(chartId, event){
-          // NOTE: it looks like _.showPointTooltip is expecting a *d3* event as 'e', not a dimple event
-          // see line 3693 in dimple.latest.js
-          // so instead of implementing this as a series.addEventHandler, we need to use d3.select
-          // to add a mouseover event that calls _.showPointTooltip, and eimits the $rootScope event.
-          var keys = _.slice(event.seriesValue, 2, 5);
-          var selector = '.' + dimple._createClass(keys).split(' ').join('.')
-          $rootScope.$broadcast('vafBubbleLeave', event, chartId, selector);
-        };
-
-        series.addEventHandler('mouseenter', _.partial(mouseOverHandler, options.id));
-        series.addEventHandler('mouseleave', _.partial(mouseLeaveHandler, options.id));
-
-        //series.addEventHandler('click', function(e) {
-        //  $scope.$emit('vafClick', options.id, e, _.slice(e.seriesValue, 2, 5));
-        //});
-
-        var vafBubbleOver = function(ngEvent, dimpleEvent, chartId, selector, chart, series) {
-          console.log('+++ Bubble Over caught: ' + selector);
-          var currentNode = svg.selectAll(selector).node();
-
-          currentOverStyles = {
-            stroke: currentNode.attributes.stroke.nodeValue,
-            fill: currentNode.attributes.fill.nodeValue,
-            r: currentNode.attributes.r.nodeValue
-          };
-
-          svg.selectAll(selector)
-            .style("stroke", "darkred")
-            .style("fill", "red")
-            .attr("r", 10);
-
-        };
-
-        $scope.$on('vafBubbleOver', _.partialRight(vafBubbleOver, chart, series));
-
-        $scope.$on('vafBubbleLeave', function(ngEvent, dimpleEvent, fromChartId, selector) {
-          console.log('--- Bubble Leave caught: ' + selector);
-
-          svg.selectAll(selector)
-            .style("stroke", currentOverStyles.stroke)
-            .style("fill", currentOverStyles.fill)
-            .attr("r", currentOverStyles.r);
-          currentOverStyles = {};
-
-        });
-
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
         chart.draw();
+
+        // overwrite mouse events w/ functions that broadcast ng events
+        var mouseOverHandler = function(chartId, event){
+          dimple._showPointTooltip(event, this, chart, series);
+          $rootScope.$broadcast('vafBubbleOver', chartId, event);
+        };
+
+        var mouseLeaveHandler = function(chartId, event){
+          dimple._removeTooltip(event, this, chart, series);
+          $rootScope.$broadcast('vafBubbleLeave', chartId, event);
+        };
+
+        series.shapes
+          .on('mouseover', _.partial(mouseOverHandler, options.id))
+          .on('mouseleave', _.partial(mouseLeaveHandler, options.id));
+
+        var varBubbleOverHandler = function(chart, series, ngEvent, chartId, d3Event){
+          if (chartId !== options.id) {
+            var node = series.select(getBubbleSelector(d3Event.key));
+            dimple._showPointTooltip(event, node, chart, series);
+          }
+        };
+
+        // capture over/leave events
+        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart, series));
+
+        $scope.$on('vafBubbleLeave', function(ngEvent, chartId, d3Event){
+          if (chartId !== options.id) {
+            var node = series.shapes.select(getBubbleSelector(d3Event.key));
+            dimple._removeTooltip(event, node, chart, series);
+          }
+        });
 
         // axis titles
         xAxis.titleShape.text(options.xAxis);
         yAxis.titleShape.text(options.yAxis);
 
+        // catch bubble over/leave events, show proper tooltip
+
       }
     });
 
+    function getBubbleSelector(eventKey) {
+      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+      return '.' + dimple._createClass(keys).split(' ').join('.');
+    }
 
     function simulateMouseEvent(element, event){
       var evt = document.createEvent('SVGEvents');

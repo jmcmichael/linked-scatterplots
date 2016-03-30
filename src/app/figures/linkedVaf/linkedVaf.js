@@ -124,7 +124,7 @@
           y: Number(d[specs[chart].y]),
           chr: Number(d.chr),
           pos: Number(d.pos),
-          basechange: d.basechange,
+          basechange: d.basechange.replace('/', '-'),
           cluster: Number(d.cluster),
           annotation: parseAnnotation(d.annotation)
         }
@@ -138,7 +138,7 @@
           vaf2: Number(d.vaf2),
           vaf3: Number(d.vaf3),
           pos: Number(d.pos),
-          basechange: d.basechange,
+          basechange: d.basechange.replace('/', '-'),
           cluster: Number(d.cluster),
           annotation: parseAnnotation(d.annotation)
         }
@@ -147,7 +147,7 @@
 
     function parseAnnotation(ann) {
       return _(ann.split(';'))
-        .map(function(s) { return s.split(':');})
+        .map(function(ann) { return ann.split(':');})
         .zipObject()
         .value()
     }
