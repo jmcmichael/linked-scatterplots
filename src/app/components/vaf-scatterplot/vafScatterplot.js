@@ -39,7 +39,7 @@
 
     $scope.chart = chart;
 
-
+    var mouseEvents = [];
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
@@ -71,36 +71,63 @@
         chart.draw();
 
         // overwrite mouse events w/ functions that broadcast ng events
-        var mouseOverHandler = function(chartId, event){
+        var mouseOverHandler = function(chartId, broadcast, event){
+          console.log('mouseover; chart: ' + chartId + '; broadcast: ' + broadcast);
           dimple._showPointTooltip(event, this, chart, series);
-          $rootScope.$broadcast('vafBubbleOver', chartId, event);
+          if(broadcast) {
+            $rootScope.$broadcast('vafBubbleOver', chartId, event);
+          }
         };
 
-        var mouseLeaveHandler = function(chartId, event){
+        var mouseLeaveHandler = function(chartId, broadcast, event){
+          console.log('mouseleave; chart: ' + chartId + '; broadcast: ' + broadcast);
           dimple._removeTooltip(event, this, chart, series);
-          $rootScope.$broadcast('vafBubbleLeave', chartId, event);
+          if(broadcast) {
+            $rootScope.$broadcast('vafBubbleLeave', chartId, event);
+          }
         };
 
         series.shapes
-          .on('mouseover', _.partial(mouseOverHandler, options.id))
-          .on('mouseleave', _.partial(mouseLeaveHandler, options.id));
+          .on('mouseover', _.partial(mouseOverHandler, options.id, true))
+          .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
 
         var varBubbleOverHandler = function(chart, series, ngEvent, chartId, d3Event){
           if (chartId !== options.id) {
-            var node = series.select(getBubbleSelector(d3Event.key));
-            dimple._showPointTooltip(event, node, chart, series);
+            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
+              d3.select(this)
+                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
+
+              var e = document.createEvent('UIEvents');
+              e.initUIEvent("mouseover", true, true, window, 1);
+              d3.select(this).node().dispatchEvent(e);
+
+              // replace w/ broadcast call
+              d3.select(this)
+                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
+            });
+          }
+        };
+
+        var varBubbleLeaveHandler = function(chart, series, ngEvent, chartId, d3Event){
+          if (chartId !== options.id) {
+            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
+              var click = d3.select(this)
+                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, false));
+
+              var e = document.createEvent('UIEvents');
+              e.initUIEvent("mouseleave", true, true, window, 1)
+              d3.select(this).node().dispatchEvent(e);
+
+              // replace w/ broadcast call
+              d3.select(this)
+                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
+            });
           }
         };
 
         // capture over/leave events
         $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart, series));
-
-        $scope.$on('vafBubbleLeave', function(ngEvent, chartId, d3Event){
-          if (chartId !== options.id) {
-            var node = series.shapes.select(getBubbleSelector(d3Event.key));
-            dimple._removeTooltip(event, node, chart, series);
-          }
-        });
+        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart, series));
 
         // axis titles
         xAxis.titleShape.text(options.xAxis);
