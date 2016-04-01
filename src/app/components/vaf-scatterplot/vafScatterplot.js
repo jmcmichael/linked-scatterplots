@@ -66,61 +66,53 @@
         chart.draw();
 
         // overwrite mouse events w/ functions that broadcast ng events
-        var mouseOverHandler = function(chartId, broadcast, event){
+        var mouseoverHandler = function(chartId, broadcast, event){
           dimple._showPointTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleOver', chartId, event);
           }
         };
 
-        var mouseLeaveHandler = function(chartId, broadcast, event){
+        var mouseleaveHandler = function(chartId, broadcast, event){
           dimple._removeTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleLeave', chartId, event);
           }
         };
 
+        var triggerMouseEvent = function(elements, event) {
+          var handlers = {
+            mouseover: mouseoverHandler,
+            mouseleave: mouseleaveHandler
+          };
+
+          elements.each(function(d, i) {
+            // attach non-broadcasting event handler
+            d3.select(this).on(event, _.partial(handlers[event], options.id, false));
+            // create and dispatch event
+            var e = new UIEvent(event, { 'view': window, 'bubbles': true, 'cancelable': true });
+            d3.select(this).node().dispatchEvent(e);
+            // replace w/ broadcasting event handler
+            d3.select(this).on(event, _.partial(handlers[event], options.id, true));
+          });
+        };
+
         series.shapes
-          .on('mouseover', _.partial(mouseOverHandler, options.id, true))
-          .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
+          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
+          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
-          if (chartId !== options.id) {
-            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
-              console.log('triggering mouse over for: ' + getBubbleSelector(d3Event.key));
-              d3.select(this)
-                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
-
-              var e = document.createEvent('UIEvents');
-              e.initUIEvent("mouseover", true, true, window, 1);
-              d3.select(this).node().dispatchEvent(e);
-
-              // replace w/ broadcast call
-              d3.select(this)
-                .on('mouseover', _.partial(mouseOverHandler, options.id, true));
-            });
+          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover');
           }
         };
 
         var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
-          if (chartId !== options.id) {
-            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
-              console.log('triggering mouse leave for: ' + getBubbleSelector(d3Event.key));
-              var click = d3.select(this)
-                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, false));
-
-              var e = document.createEvent('UIEvents');
-              e.initUIEvent("mouseleave", true, true, window, 1)
-              d3.select(this).node().dispatchEvent(e);
-
-              // replace w/ broadcast call
-              d3.select(this)
-                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
-            });
+          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave');
           }
         };
 
-        // capture over/leave events
         $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
         $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
