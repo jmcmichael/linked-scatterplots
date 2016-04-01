@@ -11,15 +11,10 @@
       scope: {
         options: '='
       },
-      link: vafScatterplotLink,
       controller: linkedParallelCoordsController
 
     };
     return directive;
-  }
-
-  function vafScatterplotLink(scope, elem, attrs) {
-    scope.elem = elem;
   }
 
   // @ngInject

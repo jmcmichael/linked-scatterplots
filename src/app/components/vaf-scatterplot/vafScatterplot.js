@@ -11,15 +11,10 @@
       scope: {
         options: '='
       },
-      link: vafScatterplotLink,
       controller: vafScatterplotController
 
     };
     return directive;
-  }
-
-  function vafScatterplotLink(scope, elem, attrs) {
-    scope.elem = elem;
   }
 
   // @ngInject
@@ -89,7 +84,7 @@
           .on('mouseover', _.partial(mouseOverHandler, options.id, true))
           .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
 
-        var varBubbleOverHandler = function(chart, series, ngEvent, chartId, d3Event){
+        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) {
             chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
               console.log('triggering mouse over for: ' + getBubbleSelector(d3Event.key));
@@ -102,12 +97,12 @@
 
               // replace w/ broadcast call
               d3.select(this)
-                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
+                .on('mouseover', _.partial(mouseOverHandler, options.id, true));
             });
           }
         };
 
-        var varBubbleLeaveHandler = function(chart, series, ngEvent, chartId, d3Event){
+        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) {
             chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
               console.log('triggering mouse leave for: ' + getBubbleSelector(d3Event.key));
@@ -126,8 +121,8 @@
         };
 
         // capture over/leave events
-        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart, series));
-        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart, series));
+        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
+        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
         // axis titles
         xAxis.titleShape.text(options.xAxis);
