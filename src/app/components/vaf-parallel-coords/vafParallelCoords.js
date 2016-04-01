@@ -1,18 +1,18 @@
 (function() {
   'use strict';
   angular.module('linkedVaf.figures')
-    .directive('vafScatterplot', vafScatterplot)
-    .controller('vafScatterplotController', vafScatterplotController);
+    .directive('linkedParallelCoords', linkedParallelCoords)
+    .controller('linkedParallelCoordsController', linkedParallelCoordsController);
 
   // @ngInject
-  function vafScatterplot() {
+  function linkedParallelCoords() {
     var directive = {
       restrict: 'EA',
       scope: {
         options: '='
       },
       link: vafScatterplotLink,
-      controller: vafScatterplotController
+      controller: linkedParallelCoordsController
 
     };
     return directive;
@@ -23,8 +23,8 @@
   }
 
   // @ngInject
-  function vafScatterplotController($scope, $rootScope, $element, d3, dimple, _) {
-    console.log('vafScatterplotController loaded.');
+  function linkedParallelCoordsController($scope, $rootScope, $element, d3, dimple, _) {
+    console.log('linkedParallelCoordsController loaded.');
     var options = $scope.options;
 
     var svg = d3.select($element[0])
@@ -85,43 +85,35 @@
           }
         };
 
+        var showToolTip = function(d3Event, chart, chartId, name) {
+          chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
+            //console.log('triggering mouse over for: ' + getBubbleSelector(d3Event.key));
+            d3.select(this)
+              .on(name, _.partial(mouseOverHandler, chartId, false));
+
+            var e = document.createEvent('UIEvents');
+            e.initUIEvent("mouseover", true, true, window, 1);
+            d3.select(this).node().dispatchEvent(e);
+
+            // replace w/ broadcast call
+            d3.select(this)
+              .on(name, _.partial(mouseOverHandler, chartId, true));
+          });
+        };
+
         series.shapes
           .on('mouseover', _.partial(mouseOverHandler, options.id, true))
           .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
 
         var varBubbleOverHandler = function(chart, series, ngEvent, chartId, d3Event){
           if (chartId !== options.id) {
-            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
-              console.log('triggering mouse over for: ' + getBubbleSelector(d3Event.key));
-              d3.select(this)
-                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
-
-              var e = document.createEvent('UIEvents');
-              e.initUIEvent("mouseover", true, true, window, 1);
-              d3.select(this).node().dispatchEvent(e);
-
-              // replace w/ broadcast call
-              d3.select(this)
-                .on('mouseover', _.partial(mouseOverHandler, options.id, false));
-            });
+            showToolTip(d3Event, chart, chartId, 'mouseover');
           }
         };
 
         var varBubbleLeaveHandler = function(chart, series, ngEvent, chartId, d3Event){
           if (chartId !== options.id) {
-            chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
-              console.log('triggering mouse leave for: ' + getBubbleSelector(d3Event.key));
-              var click = d3.select(this)
-                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, false));
-
-              var e = document.createEvent('UIEvents');
-              e.initUIEvent("mouseleave", true, true, window, 1)
-              d3.select(this).node().dispatchEvent(e);
-
-              // replace w/ broadcast call
-              d3.select(this)
-                .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
-            });
+            showToolTip(d3Event, chart, chartId, 'mouseleave');
           }
         };
 

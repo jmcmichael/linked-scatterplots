@@ -48,7 +48,7 @@
       height: vafHeight,
       margin: vafMargin,
       xAxis: 'Tumor VAF',
-      yAxis: 'Relapse VAF',
+      yAxis: 'Relapse 2 VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -62,7 +62,7 @@
       height: vafHeight,
       margin: vafMargin,
       xAxis: 'Tumor VAF',
-      yAxis: 'Allo VAF',
+      yAxis: 'Relapse 1 VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -75,8 +75,8 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
-      xAxis: 'Relapse VAF',
-      yAxis: 'Allo VAF',
+      xAxis: 'Relapse 2 VAF',
+      yAxis: 'Relapse 1 VAF',
       xMin: vafXMin,
       xMax: vafXMax,
       yMin: vafYMin,
@@ -99,7 +99,9 @@
       vm.vaf2Options.data = getVafData(data, 2);
       vm.vaf3Options.data = getVafData(data, 3);
 
-      vm.parallelCoordsOptions.data = getParallelCoordsData(data);
+      d3.tsv('data/metadata.tsv.txt', function(metadata) {
+        vm.parallelCoordsOptions.data = getParallelCoordsData(data, metadata);
+      });
     });
 
     function getVafData(data, chart) {
@@ -131,7 +133,7 @@
       });
     }
 
-    function getParallelCoordsData(data) {
+    function getParallelCoordsData(data, metadata) {
       return _.map(data, function(d) {
         return {
           vaf1: Number(d.vaf1),
