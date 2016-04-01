@@ -1,25 +1,25 @@
 (function() {
   'use strict';
   angular.module('linkedVaf.figures')
-    .directive('linkedParallelCoords', linkedParallelCoords)
-    .controller('linkedParallelCoordsController', linkedParallelCoordsController);
+    .directive('vafParallelCoords', vafParallelCoords)
+    .controller('vafParallelCoordsController', vafParallelCoordsController);
 
   // @ngInject
-  function linkedParallelCoords() {
+  function vafParallelCoords() {
     var directive = {
       restrict: 'EA',
       scope: {
         options: '='
       },
-      controller: linkedParallelCoordsController
+      controller: vafParallelCoordsController
 
     };
     return directive;
   }
 
   // @ngInject
-  function linkedParallelCoordsController($scope, $rootScope, $element, d3, dimple, _) {
-    console.log('linkedParallelCoordsController loaded.');
+  function vafParallelCoordsController($scope, $rootScope, $element, d3, dimple, _) {
+    console.log('vafParallelCoordsController loaded.');
     var options = $scope.options;
 
     var svg = d3.select($element[0])
@@ -30,11 +30,7 @@
 
     var chart = new dimple.chart(svg, options.data);
 
-    var currentOverStyles = {};
-
     $scope.chart = chart;
-
-    var mouseEvents = [];
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
@@ -56,7 +52,6 @@
         var yAxis = chart.addMeasureAxis('y', 'y');
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
-        xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;
 
         var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
@@ -66,61 +61,59 @@
         chart.draw();
 
         // overwrite mouse events w/ functions that broadcast ng events
-        var mouseOverHandler = function(chartId, broadcast, event){
+        var mouseoverHandler = function(chartId, broadcast, event){
           dimple._showPointTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleOver', chartId, event);
           }
         };
 
-        var mouseLeaveHandler = function(chartId, broadcast, event){
+        var mouseleaveHandler = function(chartId, broadcast, event){
           dimple._removeTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleLeave', chartId, event);
           }
         };
 
-        var showToolTip = function(d3Event, chart, chartId, name) {
-          chart.svg.select(getBubbleSelector(d3Event.key)).each(function(d, i) {
-            //console.log('triggering mouse over for: ' + getBubbleSelector(d3Event.key));
-            d3.select(this)
-              .on(name, _.partial(mouseOverHandler, chartId, false));
+        var triggerMouseEvent = function(elements, event) {
+          var handlers = {
+            mouseover: mouseoverHandler,
+            mouseleave: mouseleaveHandler
+          };
 
-            var e = document.createEvent('UIEvents');
-            e.initUIEvent("mouseover", true, true, window, 1);
+          elements.each(function(d, i) {
+            // attach non-broadcasting event handler
+            d3.select(this).on(event, _.partial(handlers[event], options.id, false));
+            // create and dispatch event
+            var e = new UIEvent(event, { 'view': window, 'bubbles': true, 'cancelable': true });
             d3.select(this).node().dispatchEvent(e);
-
-            // replace w/ broadcast call
-            d3.select(this)
-              .on(name, _.partial(mouseOverHandler, chartId, true));
+            // reattach broadcasting event handler
+            d3.select(this).on(event, _.partial(handlers[event], options.id, true));
           });
         };
 
         series.shapes
-          .on('mouseover', _.partial(mouseOverHandler, options.id, true))
-          .on('mouseleave', _.partial(mouseLeaveHandler, options.id, true));
+          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
+          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
-        var varBubbleOverHandler = function(chart, series, ngEvent, chartId, d3Event){
-          if (chartId !== options.id) {
-            showToolTip(d3Event, chart, chartId, 'mouseover');
+        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
+          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover');
           }
         };
 
-        var varBubbleLeaveHandler = function(chart, series, ngEvent, chartId, d3Event){
-          if (chartId !== options.id) {
-            showToolTip(d3Event, chart, chartId, 'mouseleave');
+        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
+          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave');
           }
         };
 
-        // capture over/leave events
-        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart, series));
-        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart, series));
+        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
+        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
         // axis titles
         xAxis.titleShape.text(options.xAxis);
         yAxis.titleShape.text(options.yAxis);
-
-        // catch bubble over/leave events, show proper tooltip
 
       }
     });

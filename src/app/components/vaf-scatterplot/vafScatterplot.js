@@ -30,11 +30,7 @@
 
     var chart = new dimple.chart(svg, options.data);
 
-    var currentOverStyles = {};
-
     $scope.chart = chart;
-
-    var mouseEvents = [];
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
@@ -92,7 +88,7 @@
             // create and dispatch event
             var e = new UIEvent(event, { 'view': window, 'bubbles': true, 'cancelable': true });
             d3.select(this).node().dispatchEvent(e);
-            // replace w/ broadcasting event handler
+            // reattach broadcasting event handler
             d3.select(this).on(event, _.partial(handlers[event], options.id, true));
           });
         };
@@ -119,8 +115,6 @@
         // axis titles
         xAxis.titleShape.text(options.xAxis);
         yAxis.titleShape.text(options.yAxis);
-
-        // catch bubble over/leave events, show proper tooltip
 
       }
     });

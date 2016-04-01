@@ -8,6 +8,7 @@
       'formlyBootstrap',
       'ui.grid',
       'ui.grid.selection',
+      'hc.dsv',
       'colorpicker.module',
       'angularAwesomeSlider',
       'linkedVaf.services',
