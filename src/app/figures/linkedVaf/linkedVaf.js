@@ -164,26 +164,12 @@
 
     function getParallelCoordsData(data, metadata) {
       var vafs = _.map(metadata, 'column_label');
-
-      var getPoint = function(mutation, vaf) {
-        return {
-          vaf: Number(mutation[vaf]),
-          pos: Number(mutation.pos),
-          basechange: mutation.basechange.replace('/', '-'),
-          cluster: Number(mutation.cluster),
-          annotation: parseAnnotation(mutation.annotation)
-        };
-      };
-
-      var getSeries = function(mutation, vafs) {
-        return _.map(vafs, function(vaf) { return getPoint(mutation, vaf)})
-      };
-
-      return _(data)
-        .map(function(mut) {
-          return getSeries(mut, vafs);
-        })
-        .value();
+      return _.map(data, function(mut) {
+        _.forEach(vafs, function(vaf) {
+          mut[vaf + 'Timepoint'] = _.find(metadata, {column_label: vaf}).timepoint;
+        });
+        return mut;
+      });
     }
 
     function parseAnnotation(ann) {

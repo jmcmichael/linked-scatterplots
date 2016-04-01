@@ -28,12 +28,11 @@
       .attr('height', options.height)
       .attr('id', options.id);
 
-    var chart = new dimple.chart(svg, options.data);
-
-    $scope.chart = chart;
-
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
+        var chart = new dimple.chart(svg, options.data);
+
+        $scope.chart = chart;
 
         chart.data = data;
         chart.setBounds(
@@ -47,16 +46,28 @@
           options.margin.right,
           options.margin.bottom
         );
+        // generate axes
+        var getVafAxisName = function(mut) {
+          return ['Mutation', mut.chr, mut.pos, mut.basechange].join(' ');
+        };
 
-        var xAxis = chart.addMeasureAxis('x', 'x');
-        var yAxis = chart.addMeasureAxis('y', 'y');
+        var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
+        var chartVafAxes = _.map(data, function(mut) {
+          var yAxis = chart.addMeasureAxis('y', getVafAxisName(mut));
+          yAxis.overrideMax = options.yMax;
+          return yAxis;
+        });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
-        yAxis.overrideMax = options.yMax;
 
-        var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
-
-        series.getTooltipText = _.partial(getTooltipText, data, options);
+        var chartSeries = _.map(data, function(mut) {
+          var series = chart.addSeries(
+            ['timepoint', 'vaf', 'chr', 'pos', 'basechange', 'cluster'],
+            dimple.plot.bubble,
+            [timepointAxis, getVafAxisName(mut)]);
+          series.getTooltipText = _.partial(getTooltipText, mut, options);
+          return series;
+        });
 
         chart.draw();
 
@@ -92,9 +103,11 @@
           });
         };
 
-        series.shapes
-          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
-          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+        _.forEach(chartSeries, function(series) {
+          series.shapes
+            .on('mouseover', _.partial(mouseoverHandler, options.id, true))
+            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+        });
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
