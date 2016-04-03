@@ -30,7 +30,7 @@
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
-        var chart = new dimple.chart(svg, options.data);
+        var chart = new dimple.chart(svg);
 
         $scope.chart = chart;
 

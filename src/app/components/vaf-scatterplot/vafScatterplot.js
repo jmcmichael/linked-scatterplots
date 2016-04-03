@@ -28,14 +28,12 @@
       .attr('height', options.height)
       .attr('id', options.id);
 
-    var chart = new dimple.chart(svg, options.data);
-
-    $scope.chart = chart;
-
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
+        var chart = new dimple.chart(svg, data);
 
-        chart.data = data;
+        $scope.chart = chart;
+
         chart.setBounds(
           options.height - options.margin.top - options.margin.bottom,
           options.width - options.margin.left - options.margin.right

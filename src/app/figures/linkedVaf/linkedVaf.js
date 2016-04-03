@@ -131,6 +131,7 @@
         vm.vaf2Options.data = getVafData(vafData, 2);
         vm.vaf3Options.data = getVafData(vafData, 3);
         vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData);
+        vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
       });
 
     function getVafData(data, chart) {
@@ -209,28 +210,21 @@
       return _(metadata)
         .map(coordsToTimepoints)
         .value();
+    }
 
-      //return _(data)
-      //  .map(function(mut) {
-      //    _.forEach(vafs, function(vaf) {
-      //      mut[vaf + 'Timepoint'] = _.find(metadata, {column_label: vaf}).timepoint;
-      //    });
-      //    return mut;
-      //  })
-      //  .map(function(mut){
-      //    return _.map(vafs, function(vaf) {
-      //      return {
-      //        vaf: mut[vaf],
-      //        timepoint: mut[vaf + 'Timepoint'],
-      //        chr: Number(mut.chr),
-      //        pos: Number(mut.pos),
-      //        basechange: mut.basechange.replace('/', '-'),
-      //        cluster: Number(mut.cluster),
-      //        annotation: parseAnnotation(mut.annotation)
-      //      };
-      //    });
-      //  })
-      //  .value();
+    function getTooltipData(vafData) {
+      return _(vafData)
+        .map(function(mut) {
+          return {
+            key: getMutationKey(mut),
+            chr: mut.chr,
+            pos: mut.pos,
+            basechange: mut.basechange,
+            cluster: mut.cluster,
+            annotation: parseAnnotation(mut.annotation)
+          }
+        })
+        .value();
     }
 
     function getMutationKey(mutation) {
