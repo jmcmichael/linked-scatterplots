@@ -52,10 +52,13 @@
         };
 
         var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
-        var chartVafAxes = _.map(data, function(mut) {
-          var yAxis = chart.addMeasureAxis('y', getVafAxisName(mut));
-          yAxis.overrideMax = options.yMax;
-          return yAxis;
+
+        // create first yAxis⁄⁄
+        var vafAxes = chart.addMeasureAxis('y', getVafAxisName(data[0]));
+        vafAxes.overrideMax = options.yMax;
+        // then append the rest
+        _.forEach(_.drop(data,1), function(mut) {
+          chart.addMeasureAxis(vafAxes, getVafAxisName(mut[0]));
         });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
@@ -64,8 +67,8 @@
           var series = chart.addSeries(
             ['timepoint', 'vaf', 'chr', 'pos', 'basechange', 'cluster'],
             dimple.plot.bubble,
-            [timepointAxis, getVafAxisName(mut)]);
-          series.getTooltipText = _.partial(getTooltipText, mut, options);
+            [timepointAxis, getVafAxisName(mut[0])]);
+          series.getTooltipText = _.partial(getTooltipText, mut[0], options);
           return series;
         });
 

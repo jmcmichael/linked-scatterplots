@@ -164,14 +164,78 @@
 
     function getParallelCoordsData(data, metadata) {
       var vafs = _.map(metadata, 'column_label');
-      return _.map(data, function(mut) {
-        _.forEach(vafs, function(vaf) {
-          mut[vaf + 'Timepoint'] = _.find(metadata, {column_label: vaf}).timepoint;
-        });
-        return mut;
-      });
+
+      data = _(data)
+        .map(function(mut) {
+          return {
+            vaf1: mut['vaf1'],
+            vaf2: mut['vaf2'],
+            vaf3: mut['vaf3'],
+            chr: Number(mut.chr),
+            pos: Number(mut.pos),
+            basechange: mut.basechange.replace('/', '-'),
+            cluster: Number(mut.cluster),
+            annotation: parseAnnotation(mut.annotation)
+          }
+        })
+        .sortBy('chr', 'position', 'basechange')
+        .value();
+
+      var pivotVafs= function(data, metadata) {
+        var timepoint = {
+          timepoint: metadata.timepoint,
+          series: metadata.column_label,
+          label: metadata.plot_label
+        };
+
+        var assignVaf = _.partial(function(timepoint, mutation){
+          timepoint[getMutationKey(mutation)] = mutation[timepoint.series];
+          return timepoint;
+        }, timepoint);
+
+        _(data)
+          .map(function(mutation) {
+            mutation.basechange = mutation.basechange.replace('/', '-');
+            return mutation;
+          })
+          .forEach(assignVaf)
+          .value();
+
+        return timepoint;
+      };
+
+      var coordsToTimepoints = _.partial(pivotVafs, data);
+
+      return _(metadata)
+        .map(coordsToTimepoints)
+        .value();
+
+      //return _(data)
+      //  .map(function(mut) {
+      //    _.forEach(vafs, function(vaf) {
+      //      mut[vaf + 'Timepoint'] = _.find(metadata, {column_label: vaf}).timepoint;
+      //    });
+      //    return mut;
+      //  })
+      //  .map(function(mut){
+      //    return _.map(vafs, function(vaf) {
+      //      return {
+      //        vaf: mut[vaf],
+      //        timepoint: mut[vaf + 'Timepoint'],
+      //        chr: Number(mut.chr),
+      //        pos: Number(mut.pos),
+      //        basechange: mut.basechange.replace('/', '-'),
+      //        cluster: Number(mut.cluster),
+      //        annotation: parseAnnotation(mut.annotation)
+      //      };
+      //    });
+      //  })
+      //  .value();
     }
 
+    function getMutationKey(mutation) {
+      return [mutation.chr, mutation.pos, mutation.basechange].join('|');
+    }
     function parseAnnotation(ann) {
       return _(ann.split(';'))
         .map(function(ann) { return ann.split(':');})
