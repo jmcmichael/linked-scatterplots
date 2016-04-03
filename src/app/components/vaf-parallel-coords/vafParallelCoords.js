@@ -46,29 +46,25 @@
           options.margin.right,
           options.margin.bottom
         );
-        // generate axes
-        var getVafAxisName = function(mut) {
-          return ['Mutation', mut.chr, mut.pos, mut.basechange].join(' ');
-        };
 
         var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
 
         // create first yAxis⁄⁄
-        var vafAxes = chart.addMeasureAxis('y', getVafAxisName(data[0]));
+        var vafAxes = chart.addMeasureAxis('y', options.tooltipData[0].key);
         vafAxes.overrideMax = options.yMax;
         // then append the rest
-        _.forEach(_.drop(data,1), function(mut) {
-          chart.addMeasureAxis(vafAxes, getVafAxisName(mut[0]));
+        _.forEach(_.drop(options.tooltipData,1), function(d) {
+          chart.addMeasureAxis(vafAxes, d.key);
         });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
+        var chartSeries = _.map(options.tooltipData, function(mut) {
 
-        var chartSeries = _.map(data, function(mut) {
           var series = chart.addSeries(
-            ['timepoint', 'vaf', 'chr', 'pos', 'basechange', 'cluster'],
+            [mut.key],
             dimple.plot.bubble,
-            [timepointAxis, getVafAxisName(mut[0])]);
-          series.getTooltipText = _.partial(getTooltipText, mut[0], options);
+            timepointAxis)
+          series.getTooltipText = _.partial(getTooltipText, mut, options);
           return series;
         });
 
@@ -133,6 +129,10 @@
 
       }
     });
+
+    function getMutationKey(mut) {
+      return [mut.chr, mut.pos, mut.basechange].join('|');
+    }
 
     function getBubbleSelector(eventKey) {
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
