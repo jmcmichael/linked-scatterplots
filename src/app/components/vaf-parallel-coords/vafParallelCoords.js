@@ -50,7 +50,6 @@
 
         // create x axis for time
         var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
-
         // create multiple VAF y axes for each mutation
 
         // create first yAxis⁄⁄
@@ -62,9 +61,9 @@
         });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
-        var chartSeries = _.map(tooltipData, function(mut) {
+        var bubbleSeries = _.map(tooltipData, function(mut) {
           var series = chart.addSeries(
-            'vaf',
+            ['vaf', 'timepoint', 'chr', 'pos', 'basechange', 'cluster'],
             dimple.plot.bubble,
             [timepointAxis, vafAxes[mut.key]]);
 
@@ -84,14 +83,14 @@
         chart.draw();
 
         // overwrite mouse events w/ functions that broadcast ng events
-        var mouseoverHandler = function(chartId, broadcast, event){
+        var mouseoverHandler = function(chartId, broadcast, series, event){
           dimple._showPointTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleOver', chartId, event);
           }
         };
 
-        var mouseleaveHandler = function(chartId, broadcast, event){
+        var mouseleaveHandler = function(chartId, broadcast, series, event){
           dimple._removeTooltip(event, this, chart, series);
           if(broadcast) {
             $rootScope.$broadcast('vafBubbleLeave', chartId, event);
@@ -115,10 +114,10 @@
           });
         };
 
-        _.forEach(chartSeries, function(series) {
+        _.forEach(bubbleSeries, function(series) {
           series.shapes
-            .on('mouseover', _.partial(mouseoverHandler, options.id, true))
-            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+            .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
+            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
         });
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
@@ -159,25 +158,26 @@
     }
 
     function getTooltipText(data, options, d) {
-      var item = _.find(data, {x: d.xValue, y: d.yValue});
-      var tipObj = {};
-
-      tipObj[options.xAxis] = item.x;
-      tipObj[options.yAxis] = item.y;
-
-      tipObj['Chromosome'] = item.chr;
-      tipObj['Position'] = item.pos;
-      tipObj['Base Change'] = item.basechange;
-      tipObj['Cluster'] = item.cluster;
-
-
-      _.forEach(item.annotation, function(val,key){
-        tipObj[_.capitalize(key)] = val;
-      });
-
-      return _.map(tipObj, function(val, key) {
-        return [key, val].join(': ');
-      });
+      return ['testing: testing'];
+      //var item = _.find(options.tooltipData, {x: d.xValue, y: d.yValue});
+      //var tipObj = {};
+      //
+      //tipObj[options.xAxis] = item.x;
+      //tipObj[options.yAxis] = item.y;
+      //
+      //tipObj['Chromosome'] = item.chr;
+      //tipObj['Position'] = item.pos;
+      //tipObj['Base Change'] = item.basechange;
+      //tipObj['Cluster'] = item.cluster;
+      //
+      //
+      //_.forEach(item.annotation, function(val,key){
+      //  tipObj[_.capitalize(key)] = val;
+      //});
+      //
+      //return _.map(tipObj, function(val, key) {
+      //  return [key, val].join(': ');
+      //});
 
     }
 
