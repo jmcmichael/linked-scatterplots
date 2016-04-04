@@ -218,7 +218,7 @@
     }
 
     function getMutationKey(mut) {
-      return [mut.chr, mut.pos, mut.basechange.replace('/', '-')].join('|');
+      return [mut.chr, mut.pos, mut.basechange].join('|');
     }
     function parseAnnotation(ann) {
       return _(ann.split(';'))

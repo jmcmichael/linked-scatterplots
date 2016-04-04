@@ -121,6 +121,7 @@
         });
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
+          console.log('parallel coords over handler chartId: ' + chartId);
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
             triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover');
           }
