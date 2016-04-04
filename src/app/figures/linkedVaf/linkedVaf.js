@@ -111,7 +111,10 @@
         dsv.tsv({ method:'GET', url: 'data/metadata.tsv.txt' })
       ])
       .then(function(dataTSV) {
-        var vafData = dataTSV[0].data,
+        var vafData = _.map(dataTSV[0].data, function(d) {
+          d.basechange = d.basechange .replace('/', '-');
+          return d;
+        }),
           metaData = dataTSV[1].data;
 
         vm.vaf1Options.data = getVafData(vafData, 1);
@@ -143,7 +146,7 @@
           y: Number(d[specs[chart].y]),
           chr: Number(d.chr),
           pos: Number(d.pos),
-          basechange: d.basechange.replace('/', '-'),
+          basechange: d.basechange,
           cluster: Number(d.cluster),
           annotation: parseAnnotation(d.annotation)
         }
@@ -161,7 +164,7 @@
             vaf3: mut['vaf3'],
             chr: Number(mut.chr),
             pos: Number(mut.pos),
-            basechange: mut.basechange.replace('/', '-'),
+            basechange: mut.basechange,
             cluster: Number(mut.cluster),
             annotation: parseAnnotation(mut.annotation)
           }
@@ -183,7 +186,7 @@
 
         _(data)
           .map(function(mutation) {
-            mutation.basechange = mutation.basechange.replace('/', '-');
+            mutation.basechange = mutation.basechange;
             return mutation;
           })
           .forEach(assignVaf)

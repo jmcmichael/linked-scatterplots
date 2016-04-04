@@ -148,6 +148,7 @@
 
     function getBubbleSelector(eventKey) {
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+      console.log('bubble event keys:' + JSON.stringify(keys));
       return '.' + dimple._createClass(keys).split(' ').join('.');
     }
 
