@@ -207,6 +207,9 @@
         .map(function(mut) {
           return {
             key: getMutationKey(mut),
+            vaf1: mut.vaf1,
+            vaf2: mut.vaf2,
+            vaf3: mut.vaf3,
             chr: mut.chr,
             pos: mut.pos,
             basechange: mut.basechange,

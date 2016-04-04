@@ -132,7 +132,9 @@
               })
               .value();
 
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover', series[0]);
+            _.forEach(series, function(s) {
+              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(d3Event.key)), 'mouseover', s);
+            });
           }
         };
 
@@ -141,13 +143,16 @@
             var series = _(chart.series)
               .filter(function(s) {
                 return _(s.data)
-                    .filter(getMutFromKey(d3Event.key))
+                    .filter(getMutFromKey(d3Event.key)) // better to use s.shapes.select but that doesn't appear to work
                     .value()
                     .length > 0;
               })
               .value();
 
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave', series[0]);
+            _.forEach(series, function(s) {
+              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(d3Event.key)), 'mouseleave', s);
+            });
+
           }
         };
 
@@ -167,7 +172,6 @@
 
     function getBubbleSelector(eventKey) {
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
-      console.log('bubble event keys:' + JSON.stringify(keys));
       return '.' + dimple._createClass(keys).split(' ').join('.');
     }
     function getMutFromKey(eventKey) {
@@ -176,33 +180,26 @@
       return { chr: keys[0], pos: keys[1], basechange: keys[2] };
     }
 
-    function simulateMouseEvent(element, event){
-      var evt = document.createEvent('SVGEvents');
-      evt.initEvent(event,false,true);
-      return !element.dispatchEvent(evt); //Indicate if `preventDefault` was called during handling
-    }
-
     function getTooltipText(data, options, d) {
-      return ['testing: testing'];
-      //var item = _.find(options.tooltipData, {x: d.xValue, y: d.yValue});
-      //var tipObj = {};
-      //
-      //tipObj[options.xAxis] = item.x;
-      //tipObj[options.yAxis] = item.y;
-      //
-      //tipObj['Chromosome'] = item.chr;
-      //tipObj['Position'] = item.pos;
-      //tipObj['Base Change'] = item.basechange;
-      //tipObj['Cluster'] = item.cluster;
-      //
-      //
-      //_.forEach(item.annotation, function(val,key){
-      //  tipObj[_.capitalize(key)] = val;
-      //});
-      //
-      //return _.map(tipObj, function(val, key) {
-      //  return [key, val].join(': ');
-      //});
+      var item = _.find(options.tooltipData, {chr: data.chr, pos: data.pos, basechange: data.basechange });
+
+      var tipObj = {};
+
+      tipObj.vaf1 = item.vaf1;
+      tipObj.vaf2 = item.vaf2;
+      tipObj.vaf3 = item.vaf3;
+      tipObj['Chromosome'] = item.chr;
+      tipObj['Position'] = item.pos;
+      tipObj['Base Change'] = item.basechange;
+      tipObj['Cluster'] = item.cluster;
+
+      _.forEach(item.annotation, function(val,key){
+        tipObj[_.capitalize(key)] = val;
+      });
+
+      return _.map(tipObj, function(val, key) {
+        return [key, val].join(': ');
+      });
 
     }
 
