@@ -3,14 +3,7 @@
     //This is the basic entry point of the application
     angular.module('pancan2App', [
       'ui.router',
-      'ngResource',
-      'formly',
-      'formlyBootstrap',
-      'ui.grid',
-      'ui.grid.selection',
       'hc.dsv',
-      'colorpicker.module',
-      'angularAwesomeSlider',
       'linkedVaf.services',
       'linkedVaf.filters',
       'linkedVaf.forms',

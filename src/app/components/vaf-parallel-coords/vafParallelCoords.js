@@ -63,7 +63,7 @@
           var series = chart.addSeries(
             [mut.key],
             dimple.plot.bubble,
-            timepointAxis)
+            timepointAxis);
           series.getTooltipText = _.partial(getTooltipText, mut, options);
           return series;
         });
