@@ -30,11 +30,12 @@
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
+        var tooltipData = options.tooltipData;
+
         var chart = new dimple.chart(svg);
 
         $scope.chart = chart;
 
-        chart.data = data;
         chart.setBounds(
           options.height - options.margin.top - options.margin.bottom,
           options.width - options.margin.left - options.margin.right
@@ -47,23 +48,35 @@
           options.margin.bottom
         );
 
+        // create x axis for time
         var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
 
+        // create multiple VAF y axes for each mutation
+
         // create first yAxis⁄⁄
-        var vafAxes = chart.addMeasureAxis('y', options.tooltipData[0].key);
-        vafAxes.overrideMax = options.yMax;
+        var vafAxes = {};
+        var masterYAxis = vafAxes[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
         // then append the rest
-        _.forEach(_.drop(options.tooltipData,1), function(d) {
-          chart.addMeasureAxis(vafAxes, d.key);
+        _.forEach(tooltipData, function(mut, index) {
+            vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
         });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
-        var chartSeries = _.map(options.tooltipData, function(mut) {
-
+        var chartSeries = _.map(tooltipData, function(mut) {
           var series = chart.addSeries(
-            [mut.key],
+            'vaf',
             dimple.plot.bubble,
-            timepointAxis);
+            [timepointAxis, vafAxes[mut.key]]);
+
+          series.data = _(data)
+            .map(function(d) {
+              return _.merge({
+                vaf: d[mut.key],
+                timepoint:d['timepoint']
+              }, mut);
+            })
+            .value();
+
           series.getTooltipText = _.partial(getTooltipText, mut, options);
           return series;
         });
@@ -124,8 +137,8 @@
         $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
         // axis titles
-        xAxis.titleShape.text(options.xAxis);
-        yAxis.titleShape.text(options.yAxis);
+        //xAxis.titleShape.text(options.xAxis);
+        //yAxis.titleShape.text(options.yAxis);
 
       }
     });

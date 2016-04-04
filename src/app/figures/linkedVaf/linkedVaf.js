@@ -98,26 +98,13 @@
       xMax: 0,
       margin: {
         top: 15,
-        right: 10,
+        right: 50,
         bottom: 40,
         left: 55
       },
       id: 'vafParallel',
       data: []
     };
-
-    function fetchData(filename) {
-      var d = $q.defer();
-      dsv.tsv({ method: 'GET', url: 'data/' + filename }).then(
-        function(response) {
-          d.resolve(response)
-        },
-        function(error) {
-          d.reject(error)
-        });
-
-      return d.promise;
-    }
 
     $q.all([
         dsv.tsv({ method:'GET', url: 'data/input.aml31_v1a.tsv.txt' }),
