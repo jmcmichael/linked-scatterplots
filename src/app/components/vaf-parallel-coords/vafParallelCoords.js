@@ -57,7 +57,7 @@
         var masterYAxis = vafAxes[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
         // then append the rest
         _.forEach(tooltipData, function(mut, index) {
-            vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
+          vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
         });
         var colorAxis = chart.addMeasureAxis('color', 'cluster');
 
@@ -97,7 +97,7 @@
           }
         };
 
-        var triggerMouseEvent = function(elements, event) {
+        var triggerMouseEvent = function(elements, event, series) {
           var handlers = {
             mouseover: mouseoverHandler,
             mouseleave: mouseleaveHandler
@@ -105,12 +105,12 @@
 
           elements.each(function(d, i) {
             // attach non-broadcasting event handler
-            d3.select(this).on(event, _.partial(handlers[event], options.id, false));
+            d3.select(this).on(event, _.partial(handlers[event], options.id, false, series));
             // create and dispatch event
             var e = new UIEvent(event, { 'view': window, 'bubbles': true, 'cancelable': true });
             d3.select(this).node().dispatchEvent(e);
             // reattach broadcasting event handler
-            d3.select(this).on(event, _.partial(handlers[event], options.id, true));
+            d3.select(this).on(event, _.partial(handlers[event], options.id, true, series));
           });
         };
 
@@ -121,15 +121,33 @@
         });
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
-          console.log('parallel coords over handler chartId: ' + chartId);
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover');
+            // find series w/ matching elements
+            var series = _(chart.series)
+              .filter(function(s) {
+                return _(s.data)
+                    .filter(getMutFromKey(d3Event.key))
+                    .value()
+                    .length > 0;
+              })
+              .value();
+
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover', series[0]);
           }
         };
 
         var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave');
+            var series = _(chart.series)
+              .filter(function(s) {
+                return _(s.data)
+                    .filter(getMutFromKey(d3Event.key))
+                    .value()
+                    .length > 0;
+              })
+              .value();
+
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave', series[0]);
           }
         };
 
@@ -151,6 +169,11 @@
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
       console.log('bubble event keys:' + JSON.stringify(keys));
       return '.' + dimple._createClass(keys).split(' ').join('.');
+    }
+    function getMutFromKey(eventKey) {
+      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+
+      return { chr: keys[0], pos: keys[1], basechange: keys[2] };
     }
 
     function simulateMouseEvent(element, event){
