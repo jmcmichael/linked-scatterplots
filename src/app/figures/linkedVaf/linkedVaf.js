@@ -92,7 +92,7 @@
     };
 
     vm.parallelCoordsOptions = {
-      width: 1280,
+      width: 1350,
       height: 500,
       yMax: 100,
       xMax: 0,
