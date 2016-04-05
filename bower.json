@@ -28,7 +28,7 @@
     "ui-router": "~0.2.15",
     "lodash": "~3.10.0",
     "d3-legend": "https://github.com/susielu/d3-legend.git",
-    "dimple": "~2.2.0",
+    "dimple": "https://github.com/jmcmichael/dimple.git",
     "angular-dsv": "^1.0.0"
   },
   "devDependencies": {
