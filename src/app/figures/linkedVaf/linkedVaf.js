@@ -117,12 +117,13 @@
         });
         var metaData = dataTSV[1].data;
 
-        var clusterScale = d3.scale.category10();
         var clusters = _(vafData)
           .map(function(c) { return Number(c.cluster) })
           .uniq()
           .sortBy()
           .value();
+
+        var clusterScale = clusters.length <= 10 ? d3.scale.category10(): d3.scale.category20();
 
         var palette = _.map(clusters, function(c) {return clusterScale(c); });
 
