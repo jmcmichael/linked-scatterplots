@@ -114,8 +114,9 @@
         var vafData = _.map(dataTSV[0].data, function(d) {
           d.basechange = d.basechange .replace('/', '-');
           return d;
-        }),
-          metaData = dataTSV[1].data;
+        });
+        var metaData = dataTSV[1].data;
+
         var clusterScale = d3.scale.category10();
         var clusters = _(vafData)
           .map(function(c) { return Number(c.cluster) })
@@ -123,20 +124,26 @@
           .sortBy()
           .value();
 
-        var clusterPalette = _.map(clusters, function(c) {return clusterScale(c); });
+        var palette = _.map(clusters, function(c) {return clusterScale(c); });
 
-        vm.vaf1Options.data = getVafData(vafData, 1);
-        vm.vaf1Options.palette = clusterPalette;
-        vm.vaf2Options.data = getVafData(vafData, 2);
-        vm.vaf2Options.palette = clusterPalette;
-        vm.vaf3Options.data = getVafData(vafData, 3);
-        vm.vaf3Options.palette = clusterPalette;
-        vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData);
+        var clusterMax = clusters.length;
+
+        vm.vaf1Options.data = getVafData(vafData, 1, palette);
+        vm.vaf1Options.palette = palette;
+        vm.vaf1Options.clusterMax = clusterMax;
+        vm.vaf2Options.data = getVafData(vafData, 2, palette);
+        vm.vaf2Options.palette = palette;
+        vm.vaf2Options.clusterMax = clusterMax;
+        vm.vaf3Options.data = getVafData(vafData, 3, palette);
+        vm.vaf3Options.palette = palette;
+        vm.vaf3Options.clusterMax = clusterMax;
+        vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData, palette);
         vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
-        vm.parallelCoordsOptions.palette = clusterPalette;
+        vm.parallelCoordsOptions.palette = palette;
+        vm.parallelCoordsOptions.clusterMax = clusterMax;
       });
 
-    function getVafData(data, chart) {
+    function getVafData(data, chart, palette) {
       var specs = {
         1: {
           x: 'vaf1',
@@ -152,20 +159,20 @@
         }
       };
 
-      return _.map(data, function(d) {
+      return _.map(data, function(mut) {
         return {
-          x: Number(d[specs[chart].x]),
-          y: Number(d[specs[chart].y]),
-          chr: Number(d.chr),
-          pos: Number(d.pos),
-          basechange: d.basechange,
-          cluster: Number(d.cluster),
-          annotation: parseAnnotation(d.annotation)
+          x: Number(mut[specs[chart].x]),
+          y: Number(mut[specs[chart].y]),
+          chr: Number(mut.chr),
+          pos: Number(mut.pos),
+          basechange: mut.basechange,
+          cluster: Number(mut.cluster),
+          annotation: parseAnnotation(mut.annotation)
         }
       });
     }
 
-    function getParallelCoordsData(data, metadata) {
+    function getParallelCoordsData(data, metadata, palette) {
       var vafs = _.map(metadata, 'column_label');
 
       data = _(data)
@@ -219,13 +226,13 @@
         .map(function(mut) {
           return {
             key: getMutationKey(mut),
-            vaf1: mut.vaf1,
-            vaf2: mut.vaf2,
-            vaf3: mut.vaf3,
-            chr: mut.chr,
-            pos: mut.pos,
+            vaf1: Number(mut.vaf1),
+            vaf2: Number(mut.vaf2),
+            vaf3: Number(mut.vaf3),
+            chr: Number(mut.chr),
+            pos: Number(mut.pos),
             basechange: mut.basechange,
-            cluster: mut.cluster,
+            cluster: Number(mut.cluster),
             annotation: parseAnnotation(mut.annotation)
           }
         })

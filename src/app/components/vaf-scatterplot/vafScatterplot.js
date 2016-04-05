@@ -53,7 +53,7 @@
         xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;
 
-        var series = chart.addSeries(['x', 'y', 'chr', 'pos', 'basechange', 'cluster'], dimple.plot.bubble);
+        var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
 
         series.getTooltipText = _.partial(getTooltipText, data, options);
 

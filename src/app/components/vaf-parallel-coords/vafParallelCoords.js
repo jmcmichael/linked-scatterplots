@@ -60,12 +60,14 @@
           vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
         });
         var colorAxis = chart.addColorAxis('cluster', options.palette);
+        colorAxis.overrideMax = options.clusterMax;
+        colorAxis.overrideMin = 1;
 
         var bubbleSeries = _.map(tooltipData, function(mut) {
           var series = chart.addSeries(
-            ['vaf', 'timepoint', 'chr', 'pos', 'basechange', 'cluster'],
+            ['vaf', 'timepoint', 'cluster', 'chr', 'pos', 'basechange'],
             dimple.plot.bubble,
-            [timepointAxis, vafAxes[mut.key]]);
+            [timepointAxis, vafAxes[mut.key], colorAxis]);
 
           series.data = _(data)
             .map(function(d) {
@@ -75,7 +77,6 @@
               }, mut);
             })
             .value();
-
           series.getTooltipText = _.partial(getTooltipText, mut, options);
           return series;
         });
