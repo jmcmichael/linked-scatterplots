@@ -172,13 +172,24 @@
     }
 
     function getBubbleSelector(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+      var keys = _(eventKey)
+        .split('/')
+        .slice(3,6)
+        .map(function(k) {
+          return _.trimEnd(k, '_');
+        }); // pull chr, pos, basechange
+
       return '.' + dimple._createClass(keys).split(' ').join('.');
     }
     function getMutFromKey(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+      var keys = _(eventKey)
+        .split('/')
+        .slice(3,6)
+        .map(function(k) {
+          return _.trimEnd(k, '_');
+        }); // pull chr, pos, basechange
 
-      return { chr: keys[0], pos: keys[1], basechange: keys[2] };
+      return { chr: keys[0], pos: keys[1], basechange: _.dropRight(keys[2], 4) };
     }
 
     function getTooltipText(data, options, d) {

@@ -118,7 +118,7 @@
     });
 
     function getBubbleSelector(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+      var keys = _(eventKey).split('/').slice(2,5); // pull chr, pos, basechange
       return '.' + dimple._createClass(keys).split(' ').join('.');
     }
 

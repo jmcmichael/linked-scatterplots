@@ -120,8 +120,7 @@
         var clusters = _(vafData)
           .map(function(c) { return Number(c.cluster) })
           .uniq()
-          .sortBy()
-          .value();
+          .sortBy();
 
         var clusterScale = clusters.length <= 10 ? d3.scale.category10(): d3.scale.category20();
 
@@ -189,8 +188,7 @@
             annotation: parseAnnotation(mut.annotation)
           }
         })
-        .sortBy('chr', 'position', 'basechange')
-        .value();
+        .sortBy('chr', 'position', 'basechange');
 
       var pivotVafs= function(data, metadata) {
         var timepoint = {
@@ -209,8 +207,7 @@
             mutation.basechange = mutation.basechange;
             return mutation;
           })
-          .forEach(assignVaf)
-          .value();
+          .forEach(assignVaf);
 
         return timepoint;
       };
@@ -218,8 +215,7 @@
       var coordsToTimepoints = _.partial(pivotVafs, data);
 
       return _(metadata)
-        .map(coordsToTimepoints)
-        .value();
+        .map(coordsToTimepoints);
     }
 
     function getTooltipData(vafData) {
@@ -236,8 +232,7 @@
             cluster: Number(mut.cluster),
             annotation: parseAnnotation(mut.annotation)
           }
-        })
-        .value();
+        });
     }
 
     function getMutationKey(mut) {
@@ -246,8 +241,8 @@
     function parseAnnotation(ann) {
       return _(ann.split(';'))
         .map(function(ann) { return ann.split(':');})
-        .zipObject()
-        .value()
+        .zipObject();
+
     }
 
 
