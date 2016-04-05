@@ -1,4 +1,4 @@
-pancan2-figures-app
+AML31 linked-scatterplots app
 ============
 ## Installation
 
