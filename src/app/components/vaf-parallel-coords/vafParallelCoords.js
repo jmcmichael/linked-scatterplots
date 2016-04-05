@@ -59,7 +59,7 @@
         _.forEach(tooltipData, function(mut, index) {
           vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
         });
-        var colorAxis = chart.addMeasureAxis('color', 'cluster');
+        var colorAxis = chart.addColorAxis('cluster', options.palette);
 
         var bubbleSeries = _.map(tooltipData, function(mut) {
           var series = chart.addSeries(

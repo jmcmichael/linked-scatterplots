@@ -48,7 +48,7 @@
 
         var xAxis = chart.addMeasureAxis('x', 'x');
         var yAxis = chart.addMeasureAxis('y', 'y');
-        var colorAxis = chart.addMeasureAxis('color', 'cluster');
+        var colorAxis = chart.addColorAxis('cluster', options.palette);
 
         xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;

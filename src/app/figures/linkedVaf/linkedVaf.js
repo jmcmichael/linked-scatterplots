@@ -116,12 +116,24 @@
           return d;
         }),
           metaData = dataTSV[1].data;
+        var clusterScale = d3.scale.category10();
+        var clusters = _(vafData)
+          .map(function(c) { return Number(c.cluster) })
+          .uniq()
+          .sortBy()
+          .value();
+
+        var clusterPalette = _.map(clusters, function(c) {return clusterScale(c); });
 
         vm.vaf1Options.data = getVafData(vafData, 1);
+        vm.vaf1Options.palette = clusterPalette;
         vm.vaf2Options.data = getVafData(vafData, 2);
+        vm.vaf2Options.palette = clusterPalette;
         vm.vaf3Options.data = getVafData(vafData, 3);
+        vm.vaf3Options.palette = clusterPalette;
         vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData);
         vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
+        vm.parallelCoordsOptions.palette = clusterPalette;
       });
 
     function getVafData(data, chart) {
