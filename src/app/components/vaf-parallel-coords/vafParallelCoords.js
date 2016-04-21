@@ -98,6 +98,13 @@
           }
         };
 
+        _.forEach(bubbleSeries, function(series) {
+          series.shapes
+            .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
+            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
+        });
+
+        // listen for bubbleOver events and trigger mouse events on matching bubbles
         var triggerMouseEvent = function(elements, event, series) {
           var handlers = {
             mouseover: mouseoverHandler,
@@ -114,12 +121,6 @@
             d3.select(this).on(event, _.partial(handlers[event], options.id, true, series));
           });
         };
-
-        _.forEach(bubbleSeries, function(series) {
-          series.shapes
-            .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
-            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
-        });
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
@@ -178,7 +179,7 @@
     function getMutFromKey(eventKey) {
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
 
-      return { chr: keys[0], pos: keys[1], basechange: keys[2] };
+      return { chr: Number(keys[0]), cluster: Number(keys[1]), pos: Number(keys[2]) };
     }
 
     function getTooltipText(data, options, d) {

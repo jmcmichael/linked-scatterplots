@@ -74,6 +74,11 @@
           }
         };
 
+        series.shapes
+          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
+          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+        
+        // listen for bubbleOver events and trigger mouse events on matching bubbles
         var triggerMouseEvent = function(elements, event) {
           var handlers = {
             mouseover: mouseoverHandler,
@@ -90,10 +95,6 @@
             d3.select(this).on(event, _.partial(handlers[event], options.id, true));
           });
         };
-
-        series.shapes
-          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
-          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
