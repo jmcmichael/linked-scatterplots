@@ -30,11 +30,7 @@
       data: []
     };
 
-    var rawData = [];
-
-    vm.seriesValue = [];
-    vm.elementKeys = [];
-    vm.selector = '';
+    vm.mutHover = {};
 
     var vafWidth = 400,
       vafHeight = 400,
@@ -142,6 +138,13 @@
         vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
         vm.parallelCoordsOptions.palette = palette;
         vm.parallelCoordsOptions.clusterMax = clusterMax;
+
+        $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
+          console.log('detected vafBubbleOver for mutation: ');
+          console.log(mutation);
+          vm.mutHover = mutation;
+          $scope.$apply();
+        });
       });
 
     function getVafData(data, chart, palette) {

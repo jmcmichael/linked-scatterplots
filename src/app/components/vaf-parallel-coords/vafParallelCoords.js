@@ -87,14 +87,14 @@
         var mouseoverHandler = function(chartId, broadcast, series, event){
           dimple._showPointTooltip(event, this, chart, series);
           if(broadcast) {
-            $rootScope.$broadcast('vafBubbleOver', chartId, event);
+            $rootScope.$broadcast('vafBubbleOver', chartId, event, getMutKeyFromEvent(event));
           }
         };
 
         var mouseleaveHandler = function(chartId, broadcast, series, event){
           dimple._removeTooltip(event, this, chart, series);
           if(broadcast) {
-            $rootScope.$broadcast('vafBubbleLeave', chartId, event);
+            $rootScope.$broadcast('vafBubbleLeave', chartId, event, getMutKeyFromEvent(event));
           }
         };
 
@@ -122,7 +122,7 @@
           });
         };
 
-        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
+        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
             // find series w/ matching elements
             var series = _(chart.series)
@@ -140,7 +140,7 @@
           }
         };
 
-        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
+        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
             var series = _(chart.series)
               .filter(function(s) {
@@ -168,8 +168,9 @@
       }
     });
 
-    function getMutationKey(mut) {
-      return [mut.chr, mut.pos, mut.basechange].join('|');
+    function getMutKeyFromEvent(d3Event) {
+      var keys = _(d3Event.key).split('/').slice(2,6).value(); // pull chr, pos, basechange
+      return { chr: keys[0], pos: keys[1], basechange: _.trimRight(keys[3], '_') }
     }
 
     function getBubbleSelector(eventKey) {

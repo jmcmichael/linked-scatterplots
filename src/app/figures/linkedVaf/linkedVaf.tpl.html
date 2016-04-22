@@ -1,45 +1,49 @@
-<div class="linkedVaf">
-  <div class="row">
-    <div class="col-xs-4">
-      <div class="chart-container">
-        <vaf-scatterplot
-          options="vm.vaf1Options">
-        </vaf-scatterplot>
+  <div class="linkedVaf">
+    <div class="row">
+      <div class="col-xs-4">
+        <div class="chart-container">
+          <vaf-scatterplot
+            options="vm.vaf1Options">
+          </vaf-scatterplot>
+        </div>
       </div>
-    </div>
-    <div class="col-xs-4">
-      <div class="chart-container">
-        <vaf-scatterplot
-          options="vm.vaf2Options">
-        </vaf-scatterplot>
+      <div class="col-xs-4">
+        <div class="chart-container">
+          <vaf-scatterplot
+            options="vm.vaf2Options">
+          </vaf-scatterplot>
 
+        </div>
+      </div>
+      <div class="col-xs-4">
+        <div class="chart-container">
+          <vaf-scatterplot
+            options="vm.vaf3Options">
+          </vaf-scatterplot>
+        </div>
       </div>
     </div>
-    <div class="col-xs-4">
-      <div class="chart-container">
-        <vaf-scatterplot
-          options="vm.vaf3Options">
-        </vaf-scatterplot>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="chart-container">
+          <vaf-parallel-coords
+            options="vm.parallelCoordsOptions">
+          </vaf-parallel-coords>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-4">
+        mutHover:
+        <pre ng-bind="vm.mutHover|json">
+
+        </pre>
+      </div>
+      <div class="col-xs-4">
+        hoverSelector:
+        <pre ng-bind="vm.hoverSelector">
+
+        </pre>
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="chart-container">
-        <vaf-parallel-coords
-          options="vm.parallelCoordsOptions">
-        </vaf-parallel-coords>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <h3>selector:</h3>
-      <pre ng-bind="vm.selector"></pre>
-      <h3>seriesValue:</h3>
-      <pre ng-bind="vm.seriesValue | json"></pre>
-      <h3>keys:</h3>
-      <pre ng-bind="vm.elementKeys| json"></pre>
-    </div>
-  </div>
-</div>

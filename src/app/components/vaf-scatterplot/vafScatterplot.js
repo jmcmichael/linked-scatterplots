@@ -63,21 +63,21 @@
         var mouseoverHandler = function(chartId, broadcast, event){
           dimple._showPointTooltip(event, this, chart, series);
           if(broadcast) {
-            $rootScope.$broadcast('vafBubbleOver', chartId, event);
+            $rootScope.$broadcast('vafBubbleOver', chartId, event, getMutKeyFromEvent(event));
           }
         };
 
         var mouseleaveHandler = function(chartId, broadcast, event){
           dimple._removeTooltip(event, this, chart, series);
           if(broadcast) {
-            $rootScope.$broadcast('vafBubbleLeave', chartId, event);
+            $rootScope.$broadcast('vafBubbleLeave', chartId, event, getMutKeyFromEvent(event));
           }
         };
 
         series.shapes
           .on('mouseover', _.partial(mouseoverHandler, options.id, true))
           .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
-        
+
         // listen for bubbleOver events and trigger mouse events on matching bubbles
         var triggerMouseEvent = function(elements, event) {
           var handlers = {
@@ -118,15 +118,14 @@
       }
     });
 
+    function getMutKeyFromEvent(d3Event) {
+      var keys = _(d3Event.key).split('/').slice(2,6).value(); // pull chr, pos, basechange
+      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: _.trimRight(keys[3], '_') }
+    }
+
     function getBubbleSelector(eventKey) {
       var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
       return '.' + dimple._createClass(keys).split(' ').join('.');
-    }
-
-    function simulateMouseEvent(element, event){
-      var evt = document.createEvent('SVGEvents');
-      evt.initEvent(event,false,true);
-      return !element.dispatchEvent(evt); //Indicate if `preventDefault` was called during handling
     }
 
     function getTooltipText(data, options, d) {
