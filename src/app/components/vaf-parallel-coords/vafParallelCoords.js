@@ -124,18 +124,21 @@
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
+            console.log('triggering parallelCoords bubbleOver for mutation: ');
+            console.log(mutation);
+
             // find series w/ matching elements
             var series = _(chart.series)
               .filter(function(s) {
                 return _(s.data)
-                    .filter(getMutFromKey(d3Event.key))
+                    .filter(mutation)
                     .value()
                     .length > 0;
               })
               .value();
 
             _.forEach(series, function(s) {
-              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(d3Event.key)), 'mouseover', s);
+              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', s);
             });
           }
         };
@@ -145,14 +148,14 @@
             var series = _(chart.series)
               .filter(function(s) {
                 return _(s.data)
-                    .filter(getMutFromKey(d3Event.key)) // better to use s.shapes.select but that doesn't appear to work
+                    .filter(mutation) // better to use s.shapes.select but that doesn't appear to work
                     .value()
                     .length > 0;
               })
               .value();
 
             _.forEach(series, function(s) {
-              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(d3Event.key)), 'mouseleave', s);
+              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseleave', s);
             });
 
           }
@@ -169,18 +172,13 @@
     });
 
     function getMutKeyFromEvent(d3Event) {
-      var keys = _(d3Event.key).split('/').slice(2,6).value(); // pull chr, pos, basechange
-      return { chr: keys[0], pos: keys[1], basechange: _.trimRight(keys[3], '_') }
+      var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
+      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: keys[2] };
     }
 
-    function getBubbleSelector(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+    function getBubbleSelector(mutation) {
+      var keys = _.values(mutation);
       return '.' + dimple._createClass(keys).split(' ').join('.');
-    }
-    function getMutFromKey(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
-
-      return { chr: Number(keys[0]), cluster: Number(keys[1]), pos: Number(keys[2]) };
     }
 
     function getTooltipText(data, options, d) {

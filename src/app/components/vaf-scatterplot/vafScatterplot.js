@@ -96,15 +96,15 @@
           });
         };
 
-        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event){
+        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseover');
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(mutation)), 'mouseover');
           }
         };
 
-        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event){
+        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            triggerMouseEvent(chart.svg.select(getBubbleSelector(d3Event.key)), 'mouseleave');
+            triggerMouseEvent(chart.svg.select(getBubbleSelector(mutation)), 'mouseleave');
           }
         };
 
@@ -119,12 +119,12 @@
     });
 
     function getMutKeyFromEvent(d3Event) {
-      var keys = _(d3Event.key).split('/').slice(2,6).value(); // pull chr, pos, basechange
-      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: _.trimRight(keys[3], '_') }
+      var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
+      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: keys[2] };
     }
 
-    function getBubbleSelector(eventKey) {
-      var keys = _(eventKey).split('/').slice(2,5).value(); // pull chr, pos, basechange
+    function getBubbleSelector(mutation) {
+      var keys = _.values(mutation);
       return '.' + dimple._createClass(keys).split(' ').join('.');
     }
 
@@ -150,17 +150,5 @@
       });
 
     }
-
-    //d3.tsv("/data/example_data.tsv", function (data) {
-    //  data = dimple.filterData(data, "Date", "01/12/2012");
-    //  var myChart = new dimple.chart(svg, data);
-    //  myChart.setBounds(60, 30, 500, 330)
-    //  myChart.addMeasureAxis("x", "Unit Sales");
-    //  myChart.addMeasureAxis("y", "Operating Profit");
-    //  myChart.addSeries(["SKU", "Channel"], dimple.plot.bubble);
-    //  myChart.addLegend(200, 10, 360, 20, "right");
-    //  myChart.draw();
-    //});
-
   }
 })();

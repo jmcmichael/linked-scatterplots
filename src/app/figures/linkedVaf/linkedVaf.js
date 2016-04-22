@@ -140,8 +140,6 @@
         vm.parallelCoordsOptions.clusterMax = clusterMax;
 
         $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
-          console.log('detected vafBubbleOver for mutation: ');
-          console.log(mutation);
           vm.mutHover = mutation;
           $scope.$apply();
         });
