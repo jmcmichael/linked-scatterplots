@@ -52,22 +52,45 @@
         var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
         // create multiple VAF y axes for each mutation
 
-        // create first yAxis⁄⁄
-        var vafAxes = {};
-        var masterYAxis = vafAxes[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
+        // create bubble y axis
+        var vafBubbleAxis = {};
+        var vafLineAxis = {};
+
+        var masterBubbleAxis = vafBubbleAxis[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
+        var masterLineAxis = vafLineAxis[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
+
         // then append the rest
         _.forEach(tooltipData, function(mut, index) {
-          vafAxes[mut.key] = chart.addMeasureAxis(masterYAxis, 'vaf');
+          vafBubbleAxis[mut.key] = chart.addMeasureAxis(masterBubbleAxis, 'vaf');
+          vafLineAxis[mut.key] = chart.addMeasureAxis(masterLineAxis, 'vaf');
         });
         var colorAxis = chart.addColorAxis('cluster', options.palette);
         colorAxis.overrideMax = options.clusterMax;
         colorAxis.overrideMin = 1;
 
+        var lineSeries = _.map(tooltipData, function(mut) {
+          var series = chart.addSeries(
+            ['timepoint', 'vaf', 'cluster', 'chr', 'pos', 'basechange'],
+            dimple.plot.line,
+            [timepointAxis, vafLineAxis[mut.key], colorAxis]);
+          series.data = _(data)
+            .map(function(d) {
+              return _.merge({
+                vaf: d[mut.key],
+                timepoint:d['timepoint']
+              }, mut);
+            })
+            .value();
+
+          series.getTooltipText = _.partial(getTooltipText, mut, options);
+          return series;
+        });
+
         var bubbleSeries = _.map(tooltipData, function(mut) {
           var series = chart.addSeries(
-            ['vaf', 'timepoint', 'cluster', 'chr', 'pos', 'basechange'],
+            ['timepoint', 'vaf','cluster', 'chr', 'pos', 'basechange'],
             dimple.plot.bubble,
-            [timepointAxis, vafAxes[mut.key], colorAxis]);
+            [ timepointAxis, vafBubbleAxis[mut.key], colorAxis]);
 
           series.data = _(data)
             .map(function(d) {
