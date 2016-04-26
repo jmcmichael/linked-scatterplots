@@ -26,7 +26,8 @@
       .append('svg')
       .attr('width', options.width)
       .attr('height', options.height)
-      .attr('id', options.id);
+      .attr('id', options.id)
+      .style('overflow', 'visible');
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {

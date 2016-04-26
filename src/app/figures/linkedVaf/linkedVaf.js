@@ -43,9 +43,9 @@
       bubbleOpacity = 0.5,
       pathOpacity = 0.3,
       vafXMin = 0,
-      vafXMax = 100,
+      vafXMax = 65,
       vafYMin = 0,
-      vafYMax = 100;
+      vafYMax = 65;
 
     vm.vaf1Options = {
       width: vafWidth,

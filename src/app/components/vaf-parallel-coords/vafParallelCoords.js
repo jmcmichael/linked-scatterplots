@@ -26,7 +26,8 @@
       .append('svg')
       .attr('width', options.width)
       .attr('height', options.height)
-      .attr('id', options.id);
+      .attr('id', options.id)
+      .style('overflow', 'visible');
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
@@ -106,9 +107,6 @@
 
         var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            console.log('triggering parallelCoords bubbleOver for mutation: ');
-            console.log(mutation);
-
             // find series w/ matching elements
             var elements = _(chart.data)
               .filter(function(point) {
