@@ -135,6 +135,7 @@
         vm.vaf3Options.palette = palette;
         vm.vaf3Options.clusterMax = clusterMax;
         vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData, palette);
+        vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
         vm.parallelCoordsOptions.palette = palette;
         vm.parallelCoordsOptions.clusterMax = clusterMax;
 
