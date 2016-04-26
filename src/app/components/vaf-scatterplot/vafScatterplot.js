@@ -59,6 +59,10 @@
 
         chart.draw();
 
+        // post-render styling (TODO: implement with dimple custom format?)
+        chart.svg.selectAll('circle.dimple-bubble')
+          .style('opacity', options.bubbleOpacity);
+
         // overwrite mouse events w/ functions that broadcast ng events
         var mouseoverHandler = function(chartId, broadcast, event){
           dimple._showPointTooltip(event, this, chart, series);

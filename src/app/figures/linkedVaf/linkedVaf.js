@@ -40,6 +40,8 @@
         bottom: 40,
         left: 55
       },
+      bubbleOpacity = 0.5,
+      pathOpacity = 0.3,
       vafXMin = 0,
       vafXMax = 100,
       vafYMin = 0,
@@ -56,6 +58,7 @@
       yMin: vafYMin,
       yMax: vafYMax,
       id: 'vaf1',
+      bubbleOpacity: bubbleOpacity,
       data: []
     };
 
@@ -70,6 +73,7 @@
       yMin: vafYMin,
       yMax: vafYMax,
       id: 'vaf2',
+      bubbleOpacity: bubbleOpacity,
       data: []
     };
 
@@ -84,6 +88,7 @@
       yMin: vafYMin,
       yMax: vafYMax,
       id: 'vaf3',
+      bubbleOpacity: bubbleOpacity,
       data: []
     };
 
@@ -99,6 +104,7 @@
         left: 55
       },
       id: 'vafParallel',
+      pathOpacity: pathOpacity,
       data: []
     };
 

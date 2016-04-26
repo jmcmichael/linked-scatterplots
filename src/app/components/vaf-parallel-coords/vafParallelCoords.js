@@ -63,6 +63,10 @@
         chart.data = data;
         chart.draw();
 
+        // post-render styling (TODO: implement with dimple custom format?)
+        chart.svg.selectAll('path.dimple-line')
+          .style('opacity', options.pathOpacity);
+
         // overwrite mouse events w/ functions that broadcast ng events
         var mouseoverHandler = function(chartId, broadcast, series, event){
           dimple._showPointTooltip(event, this, chart, series);
@@ -81,7 +85,6 @@
         chart.svg.selectAll('circle.dimple-marker')
           .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
           .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
-
 
         // listen for bubbleOver events and trigger mouse events on matching bubbles
         var triggerMouseEvent = function(elements, event, series) {
@@ -107,29 +110,25 @@
             console.log(mutation);
 
             // find series w/ matching elements
-            var series = _(chart.series)
-              .filter(function(s) {
-                return _(s.data)
-                    .filter(mutation)
-                    .value()
-                    .length > 0;
+            var elements = _(chart.data)
+              .filter(function(point) {
+                var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
+                return point.series === key;
               })
               .value();
 
-            _.forEach(series, function(s) {
-              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', s);
+            _.forEach(elements, function(s) {
+              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', series);
             });
           }
         };
 
         var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
           if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            var series = _(chart.series)
-              .filter(function(s) {
-                return _(s.data)
-                    .filter(mutation) // better to use s.shapes.select but that doesn't appear to work
-                    .value()
-                    .length > 0;
+            var series = _(chart.data)
+              .filter(function(point) {
+                var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
+                return point.series === key;
               })
               .value();
 
@@ -160,8 +159,7 @@
       }
 
       function getBubbleSelector(mutation) {
-        var keys = _.values(mutation);
-        return '.' + dimple._createClass(keys).split(' ').join('.');
+        return 'circle.dimple-marker.dimple-' + _.values(mutation).join('-').toLowerCase();
       }
 
       function getTooltipText(data, options, d3Event) {
