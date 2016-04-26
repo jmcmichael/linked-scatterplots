@@ -74,8 +74,13 @@
           { 'Brand':'Uncoolio', 'Day':'Thu', 'Sales Volume':250 },
           { 'Brand':'Uncoolio', 'Day':'Fri', 'Sales Volume':350 }
         ];
-        chart.addCategoryAxis('x', 'timepointLabel');
-        chart.addMeasureAxis('y', 'vaf');
+        var x = chart.addCategoryAxis('x', 'timepointLabel');
+        x.addOrderRule('timepoint');
+        var y = chart.addMeasureAxis('y', 'vaf');
+        var c = chart.addColorAxis('cluster', options.palette);
+        c.overrideMax = options.clusterMax;
+        c.overrideMin = 1;
+        
         chart.addSeries('series', dimple.plot.line);
         chart.data = data;
 
