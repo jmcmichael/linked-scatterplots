@@ -135,7 +135,6 @@
         vm.vaf3Options.palette = palette;
         vm.vaf3Options.clusterMax = clusterMax;
         vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData, palette);
-        vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
         vm.parallelCoordsOptions.palette = palette;
         vm.parallelCoordsOptions.clusterMax = clusterMax;
 
@@ -174,52 +173,30 @@
       });
     }
 
-    function getParallelCoordsData(data, metadata, palette) {
+    function getParallelCoordsData(data, metadata) {
       var vafs = _.map(metadata, 'column_label');
 
-      data = _(data)
+      return _(data)
         .map(function(mut) {
-          return {
-            vaf1: mut['vaf1'],
-            vaf2: mut['vaf2'],
-            vaf3: mut['vaf3'],
-            chr: Number(mut.chr),
-            pos: Number(mut.pos),
-            basechange: mut.basechange,
-            cluster: Number(mut.cluster),
-            annotation: parseAnnotation(mut.annotation)
-          }
+          return _(vafs)
+            .map(function(vaf) {
+              var meta = _.find(metadata, {column_label: vaf});
+              return {
+                series: [mut.chr, mut.pos, mut.basechange].join('|'),
+                timepoint: Number(meta.timepoint),
+                timepointLabel: meta.plot_label,
+                vaf: Number(mut[vaf]),
+                cluster: Number(mut.cluster),
+                chr: Number(mut.chr),
+                // pos: Number(mut.pos),
+                // basechange: mut.basechange,
+                // annotation: parseAnnotation(mut.annotation)
+              };
+            })
+            .value();
         })
-        .sortBy('chr', 'position', 'basechange')
-        .value();
-
-      var pivotVafs= function(data, metadata) {
-        var timepoint = {
-          timepoint: metadata.timepoint,
-          series: metadata.column_label,
-          label: metadata.plot_label
-        };
-
-        var assignVaf = _.partial(function(timepoint, mutation){
-          timepoint[getMutationKey(mutation)] = mutation[timepoint.series];
-          return timepoint;
-        }, timepoint);
-
-        _(data)
-          .map(function(mutation) {
-            mutation.basechange = mutation.basechange;
-            return mutation;
-          })
-          .forEach(assignVaf)
-          .value();
-
-        return timepoint;
-      };
-
-      var coordsToTimepoints = _.partial(pivotVafs, data);
-
-      return _(metadata)
-        .map(coordsToTimepoints)
+        .flatten()
+        .sortBy(['series', 'timepoint'])
         .value();
     }
 

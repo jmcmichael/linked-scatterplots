@@ -49,194 +49,40 @@
         );
 
         // create x axis for time
-        var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
-        // create multiple VAF y axes for each mutation
+        // var timepointAxis = chart.addMeasureAxis('x', 'timepoint');
+        // var vafAxis = chart.addMeasureAxis('y', 'vaf');
+        // var colorAxis = chart.addColorAxis('cluster', options.palette);
+        // colorAxis.overrideMax = options.clusterMax;
+        // colorAxis.overrideMin = 1;
+        //
+        // var lineSeries = chart.addSeries(
+        //   ['series', 'timepoint', 'cluster'],
+        //   dimple.plot.line,
+        //   [vafAxis, timepointAxis, colorAxis]);
+        //
+        // chart.data = data;
 
-        // create bubble y axis
-        var vafBubbleAxis = {};
-        var vafLineAxis = {};
-
-        var masterBubbleAxis = vafBubbleAxis[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
-        var masterLineAxis = vafLineAxis[tooltipData[0].key] = chart.addMeasureAxis('y', 'vaf');
-
-        // then append the rest
-        _.forEach(tooltipData, function(mut, index) {
-          vafBubbleAxis[mut.key] = chart.addMeasureAxis(masterBubbleAxis, 'vaf');
-          vafLineAxis[mut.key] = chart.addMeasureAxis(masterLineAxis, 'vaf');
-        });
-        var colorAxis = chart.addColorAxis('cluster', options.palette);
-        colorAxis.overrideMax = options.clusterMax;
-        colorAxis.overrideMin = 1;
-
-        var lineSeries = _.map(tooltipData, function(mut) {
-          var series = chart.addSeries(
-            ['timepoint', 'vaf', 'cluster', 'chr', 'pos', 'basechange'],
-            dimple.plot.line,
-            [timepointAxis, vafLineAxis[mut.key], colorAxis]);
-          series.data = _(data)
-            .map(function(d) {
-              return _.merge({
-                vaf: d[mut.key],
-                timepoint:d['timepoint']
-              }, mut);
-            })
-            .value();
-
-          series.getTooltipText = _.partial(getTooltipText, mut, options);
-          return series;
-        });
-
-        var bubbleSeries = _.map(tooltipData, function(mut) {
-          var series = chart.addSeries(
-            ['timepoint', 'vaf','cluster', 'chr', 'pos', 'basechange'],
-            dimple.plot.bubble,
-            [ timepointAxis, vafBubbleAxis[mut.key], colorAxis]);
-
-          series.data = _(data)
-            .map(function(d) {
-              return _.merge({
-                vaf: d[mut.key],
-                timepoint:d['timepoint']
-              }, mut);
-            })
-            .value();
-          series.getTooltipText = _.partial(getTooltipText, mut, options);
-          return series;
-        });
+        var exData = [
+          { 'Brand':'Coolio', 'Day':'Mon', 'Sales Volume':1000 },
+          { 'Brand':'Coolio', 'Day':'Tue', 'Sales Volume':1100 },
+          { 'Brand':'Coolio', 'Day':'Wed', 'Sales Volume':900 },
+          { 'Brand':'Coolio', 'Day':'Thu', 'Sales Volume':800 },
+          { 'Brand':'Coolio', 'Day':'Fri', 'Sales Volume':850 },
+          { 'Brand':'Uncoolio', 'Day':'Mon', 'Sales Volume':200 },
+          { 'Brand':'Uncoolio', 'Day':'Tue', 'Sales Volume':100 },
+          { 'Brand':'Uncoolio', 'Day':'Wed', 'Sales Volume':300 },
+          { 'Brand':'Uncoolio', 'Day':'Thu', 'Sales Volume':250 },
+          { 'Brand':'Uncoolio', 'Day':'Fri', 'Sales Volume':350 }
+        ];
+        chart.addCategoryAxis('x', 'timepointLabel');
+        chart.addMeasureAxis('y', 'vaf');
+        chart.addSeries('series', dimple.plot.line);
+        chart.data = data;
 
         chart.draw();
 
-        // overwrite mouse events w/ functions that broadcast ng events
-        var mouseoverHandler = function(chartId, broadcast, series, event){
-          dimple._showPointTooltip(event, this, chart, series);
-          if(broadcast) {
-            $rootScope.$broadcast('vafBubbleOver', chartId, event, getMutKeyFromEvent(event));
-          }
-        };
-
-        var mouseleaveHandler = function(chartId, broadcast, series, event){
-          dimple._removeTooltip(event, this, chart, series);
-          if(broadcast) {
-            $rootScope.$broadcast('vafBubbleLeave', chartId, event, getMutKeyFromEvent(event));
-          }
-        };
-
-        _.forEach(bubbleSeries, function(series) {
-          series.shapes
-            .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
-            .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
-        });
-
-        // listen for bubbleOver events and trigger mouse events on matching bubbles
-        var triggerMouseEvent = function(elements, event, series) {
-          var handlers = {
-            mouseover: mouseoverHandler,
-            mouseleave: mouseleaveHandler
-          };
-
-          elements.each(function(d, i) {
-            // attach non-broadcasting event handler
-            d3.select(this).on(event, _.partial(handlers[event], options.id, false, series));
-            // create and dispatch event
-            var e = new UIEvent(event, { 'view': window, 'bubbles': true, 'cancelable': true });
-            d3.select(this).node().dispatchEvent(e);
-            // reattach broadcasting event handler
-            d3.select(this).on(event, _.partial(handlers[event], options.id, true, series));
-          });
-        };
-
-        var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
-          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            console.log('triggering parallelCoords bubbleOver for mutation: ');
-            console.log(mutation);
-
-            // find series w/ matching elements
-            var series = _(chart.series)
-              .filter(function(s) {
-                return _(s.data)
-                    .filter(mutation)
-                    .value()
-                    .length > 0;
-              })
-              .value();
-
-            _.forEach(series, function(s) {
-              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', s);
-            });
-          }
-        };
-
-        var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
-          if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-            var series = _(chart.series)
-              .filter(function(s) {
-                return _(s.data)
-                    .filter(mutation) // better to use s.shapes.select but that doesn't appear to work
-                    .value()
-                    .length > 0;
-              })
-              .value();
-
-            _.forEach(series, function(s) {
-              triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseleave', s);
-            });
-
-          }
-        };
-
-        $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
-        $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
-
-        // axis titles
-        //xAxis.titleShape.text(options.xAxis);
-        //yAxis.titleShape.text(options.yAxis);
-
       }
     });
-
-    function getMutKeyFromEvent(d3Event) {
-      var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
-      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: keys[2] };
-    }
-
-    function getBubbleSelector(mutation) {
-      var keys = _.values(mutation);
-      return '.' + dimple._createClass(keys).split(' ').join('.');
-    }
-
-    function getTooltipText(data, options, d) {
-      var item = _.find(options.tooltipData, {chr: data.chr, pos: data.pos, basechange: data.basechange });
-
-      var tipObj = {};
-
-      tipObj.vaf1 = item.vaf1;
-      tipObj.vaf2 = item.vaf2;
-      tipObj.vaf3 = item.vaf3;
-      tipObj['Chromosome'] = item.chr;
-      tipObj['Position'] = item.pos;
-      tipObj['Base Change'] = item.basechange;
-      tipObj['Cluster'] = item.cluster;
-
-      _.forEach(item.annotation, function(val,key){
-        tipObj[_.capitalize(key)] = val;
-      });
-
-      return _.map(tipObj, function(val, key) {
-        return [key, val].join(': ');
-      });
-
-    }
-
-    //d3.tsv("/data/example_data.tsv", function (data) {
-    //  data = dimple.filterData(data, "Date", "01/12/2012");
-    //  var myChart = new dimple.chart(svg, data);
-    //  myChart.setBounds(60, 30, 500, 330)
-    //  myChart.addMeasureAxis("x", "Unit Sales");
-    //  myChart.addMeasureAxis("y", "Operating Profit");
-    //  myChart.addSeries(["SKU", "Channel"], dimple.plot.bubble);
-    //  myChart.addLegend(200, 10, 360, 20, "right");
-    //  myChart.draw();
-    //});
 
   }
 })();
