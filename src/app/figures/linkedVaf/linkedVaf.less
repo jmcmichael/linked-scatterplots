@@ -3,12 +3,33 @@
 
 .linkedVaf {
   margin-top: 2em;
+  position: relative;
 
   .chart-container {
+    height: 760px;
+  }
+  .vaf-scatterplot {
+    position: absolute;
+    top: 0;;
+  }
+  #vaf1 {
+    left: 0;
+  }
+  #vaf2 {
+    left: 380px;
+  }
+  #vaf3 {
+    left: 760px;
+  }
+  #parallel-coords {
+    position: absolute;
+    top: 380px;
+    left: 0;
+  }
 
-    border-radius: 10px;
+  .chart-container {
+    border-radius: 5px;
     background: white;
-    border: 1px solid #CCC;
     margin-bottom: 2em;
   }
 }

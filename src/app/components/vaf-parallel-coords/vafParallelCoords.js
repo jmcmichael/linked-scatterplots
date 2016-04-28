@@ -29,6 +29,15 @@
       .attr('id', options.id)
       .style('overflow', 'visible');
 
+    // title
+    svg.append('text')
+      .attr('x', options.margin.left)
+      .attr('y', options.margin.top - 10)
+      .style('text-anchor', 'left')
+      .style('font-family', 'sans-serif')
+      .style('font-weight', 'bold')
+      .text(options.title);
+
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
         var tooltipData = options.tooltipData;

@@ -32,11 +32,11 @@
 
     vm.mutHover = {};
 
-    var vafWidth = 400,
-      vafHeight = 400,
+    var vafWidth = 380,
+      vafHeight = 380,
       vafMargin = {
-        top: 15,
-        right: 10,
+        top: 40,
+        right: 25,
         bottom: 40,
         left: 55
       },
@@ -51,6 +51,7 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
+      title: 'Relapse 2 vs. Tumor VAF',
       xAxis: 'Tumor VAF',
       yAxis: 'Relapse 2 VAF',
       xMin: vafXMin,
@@ -66,6 +67,7 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
+      title: 'Tumor vs. Relapse 1 VAF',
       xAxis: 'Tumor VAF',
       yAxis: 'Relapse 1 VAF',
       xMin: vafXMin,
@@ -81,6 +83,7 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
+      title: 'Relapse 2 vs. Relapse 1 VAF',
       xAxis: 'Relapse 2 VAF',
       yAxis: 'Relapse 1 VAF',
       xMin: vafXMin,
@@ -93,13 +96,16 @@
     };
 
     vm.parallelCoordsOptions = {
-      width: 1350,
-      height: 500,
+      width: 1140,
+      height: 380,
       yMax: 100,
       xMax: 0,
+      title: 'VAF vs. Treatement Timepoint',
+      xAxis: 'Timepoint',
+      yAxis: 'Variant Allele Frequency',
       margin: {
-        top: 15,
-        right: 50,
+        top: 40,
+        right: 25,
         bottom: 40,
         left: 55
       },
