@@ -15,41 +15,35 @@
     <!-- endinject -->
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">AML31 Figures</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li ui-sref-active><a ui-sref="linkedVaf">Linked VAFs</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12">
-          <ui-view></ui-view>
-        </div>
+    <div class="linkedVaf" ng-controller="linkedVafController">
+      <div class="chart-container">
+        <vaf-scatterplot
+          id="vaf1"
+          class="vaf-scatterplot"
+          options="vm.vaf1Options">
+        </vaf-scatterplot>
+        <vaf-scatterplot
+          id="vaf2"
+          class="vaf-scatterplot"
+          options="vm.vaf2Options">
+        </vaf-scatterplot>
+        <vaf-scatterplot
+          id="vaf3"
+          class="vaf-scatterplot"
+          options="vm.vaf3Options">
+        </vaf-scatterplot>
+        <vaf-parallel-coords
+          id="parallel-coords"
+          options="vm.parallelCoordsOptions">
+        </vaf-parallel-coords>
       </div>
     </div>
-
     <!-- inject:vendor:js -->
     <script src="/angular/angular.js"></script>
-    <script src="/jquery/dist/jquery.js"></script>
     <script src="/d3/d3.js"></script>
-    <script src="/ui-router/release/angular-ui-router.js"></script>
     <script src="/lodash/lodash.js"></script>
     <script src="/dimple/dist/dimple.latest.js"></script>
     <script src="/angular-dsv/angular-dsv.js"></script>
-    <script src="/bootstrap/dist/js/bootstrap.js"></script>
     <!-- endinject -->
     <!-- inject:js -->
     <script src="/app.js"></script>

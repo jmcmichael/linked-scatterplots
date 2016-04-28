@@ -1,18 +1,7 @@
 (function () {
   'use strict';
   angular.module('linkedVaf.figures')
-    .controller('linkedVafController', linkedVafController)
-    .config(linkedVafConfig);
-
-  // @ngInject
-  function linkedVafConfig($stateProvider) {
-    $stateProvider
-      .state('linkedVaf', {
-        url: '/linkedVaf',
-        controller: 'linkedVafController',
-        templateUrl: 'figures/linkedVaf/linkedVaf.tpl.html'
-      });
-  }
+    .controller('linkedVafController', linkedVafController);
 
   // @ngInject
   function linkedVafController($scope, $rootScope, $q, d3, dsv, _) {

@@ -2,25 +2,19 @@
     'use strict';
     //This is the basic entry point of the application
     angular.module('pancan2App', [
-      'ui.router',
       'hc.dsv',
       'linkedVaf.services',
       'linkedVaf.filters',
       'linkedVaf.forms',
       'linkedVaf.figures'
     ])
-      .config(appConfig)
-      .run(appRun);
+        .run(appRun);
 
   angular.module('linkedVaf.services', []);
   angular.module('linkedVaf.filters', []);
   angular.module('linkedVaf.figures', []);
   angular.module('linkedVaf.forms', []);
 
-  // @ngInject
-  function appConfig($urlRouterProvider) {
-    $urlRouterProvider.otherwise('linkedVaf');
-  }
 
   // @ngInject
   function appRun($rootScope) {
