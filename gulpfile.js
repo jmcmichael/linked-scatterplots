@@ -166,7 +166,7 @@ gulp.task('bower-assets-dist', function() {
 /**
  * Dist
  */
-gulp.task('dist', ['vendors', 'assets', 'styles-dist', 'scripts-dist', 'bower-assets-dist'], function() {
+gulp.task('dist', ['vendors', 'assets', 'styles-dist', 'scripts-dist', 'bower-assets-dist', 'data'], function() {
     return gulp.src('./src/app/index.html')
         .pipe(g.inject(gulp.src('./dist/vendors.min.{js,css}'), {
             ignorePath: 'dist',
@@ -186,7 +186,14 @@ gulp.task('clean-dist', function(done) {
     rimraf('./dist', done);
 });
 
-
+/**
+ * Copy data files
+ **/
+gulp.task('data', function () {
+  return gulp.src([
+    './src/app/data/**/*'
+  ]).pipe(gulp.dest('./dist/data'));
+});
 
 /**
  * Static file server
