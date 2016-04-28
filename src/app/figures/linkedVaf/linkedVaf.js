@@ -135,10 +135,11 @@
 
     function onRegisterApi(gridApi) {
       var selectsRegistered = false;
-
+      var dataInit = false;
       $scope.$watch('vm.data', function(data) {
-        if (data.length > 0) {
-          vm.gridOptions.data = data;
+        if (data.length > 0 && dataInit === false) {
+          angular.copy(data,vm.gridOptions.data);
+          dataInit = true;
         }
       });
 
@@ -325,7 +326,7 @@
             return;
          }
         } else {
-          _.drop(vm.data, getMutFromRow(row));
+          _.remove(vm.data, getMutFromRow(row));
         }
         updateCharts();
       });

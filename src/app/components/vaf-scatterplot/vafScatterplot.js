@@ -38,26 +38,27 @@
       .style('font-weight', 'bold')
       .text(options.title);
 
+    var chart = new dimple.chart(svg);
+
+    $scope.chart = chart;
+
+    chart.setBounds(
+      options.height - options.margin.top - options.margin.bottom,
+      options.width - options.margin.left - options.margin.right
+    );
+
+    chart.setMargins(
+      options.margin.left,
+      options.margin.top,
+      options.margin.right,
+      options.margin.bottom
+    );
+
+    var xAxis = chart.addMeasureAxis('x', 'x');
+    var yAxis = chart.addMeasureAxis('y', 'y');
+
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
-        var chart = new dimple.chart(svg, data);
-
-        $scope.chart = chart;
-
-        chart.setBounds(
-          options.height - options.margin.top - options.margin.bottom,
-          options.width - options.margin.left - options.margin.right
-        );
-
-        chart.setMargins(
-          options.margin.left,
-          options.margin.top,
-          options.margin.right,
-          options.margin.bottom
-        );
-
-        var xAxis = chart.addMeasureAxis('x', 'x');
-        var yAxis = chart.addMeasureAxis('y', 'y');
         var colorAxis = chart.addColorAxis('cluster', options.palette);
 
         xAxis.overrideMax = options.xMax;
@@ -66,8 +67,8 @@
         var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
 
         series.getTooltipText = _.partial(getTooltipText, data, options);
-
-        chart.draw();
+        chart.data = data;
+        chart.draw(1000);
 
         // post-render styling (TODO: implement with dimple custom format?)
         chart.svg.selectAll('circle.dimple-bubble')
