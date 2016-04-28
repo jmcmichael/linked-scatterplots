@@ -1,14 +1,22 @@
-(function() {
-    'use strict';
-    //This is the basic entry point of the application
-    angular.module('pancan2App', [
+(function () {
+  'use strict';
+  //This is the basic entry point of the application
+  angular.module('pancan2App', [
       'hc.dsv',
       'linkedVaf.services',
       'linkedVaf.filters',
       'linkedVaf.forms',
-      'linkedVaf.figures'
+      'linkedVaf.figures',
+      'formly',
+      'formlyBootstrap',
+      'ui.bootstrap',
+      'ui.grid.autoResize',
+      'ui.grid.pagination',
+      'ui.grid.selection',
+      'ui.grid.edit',
+      'ui.grid.rowEdit'
     ])
-        .run(appRun);
+    .run(appRun);
 
   angular.module('linkedVaf.services', []);
   angular.module('linkedVaf.filters', []);
@@ -17,21 +25,11 @@
 
 
   // @ngInject
-  function appRun($rootScope) {
-    console.log('appRun called.');
-    /*  ui-router debug logging */
-    function message(to, toP, from, fromP) {
-      return from.name + angular.toJson(fromP) + ' -> ' + to.name + angular.toJson(toP);
-    }
-
-    $rootScope.$on('$stateChangeStart', function (evt, to, toP, from, fromP) {
-      console.log('Start:   ' + message(to, toP, from, fromP));
-    });
-    $rootScope.$on('$stateChangeSuccess', function (evt, to, toP, from, fromP) {
-      console.log('Success: ' + message(to, toP, from, fromP));
-    });
-    $rootScope.$on('$stateChangeError', function (evt, to, toP, from, fromP, err) {
-      console.error('Error:   ' + message(to, toP, from, fromP), err);
+  function appRun($rootScope, formlyConfig) {
+    formlyConfig.setType({
+      name: 'ui-grid',
+      template: '<div ui-grid="{ data: model[options.key], columnDefs: to.columnDefs, onRegisterApi: to.onRegisterApi}" ui-grid-auto-resize ui-grid-pagination ui-grid-selection ui-grid-edit ui-grid-row-edit ></div>',
+      wrapper: ['bootstrapLabel', 'bootstrapHasError']
     });
   }
 })();

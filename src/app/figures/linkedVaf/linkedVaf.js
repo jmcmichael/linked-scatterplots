@@ -8,6 +8,9 @@
     console.log('linkedVafController loaded.');
     var vm = $scope.vm = {};
 
+    vm.data = [];
+    vm.originalData = [];
+
     vm.chart1 = {};
     vm.chart2 = {};
     vm.chart3 = {};
@@ -103,48 +106,125 @@
       data: []
     };
 
+    var columnDefs = [
+      {
+        name: 'CHR',
+        field: 'chr'
+      },
+      {
+        name: 'POS',
+        field: 'pos'
+      },
+      {
+        name: 'Basechange',
+        field: 'basechange'
+      },
+      {
+        name: 'VAF 1',
+        field: 'vaf1'
+      },
+      {
+        name: 'VAF 2',
+        field: 'vaf2'
+      },
+      {
+        name: 'VAF 3',
+        field: 'vaf3'
+      }
+    ];
+
+    function onRegisterApi(gridApi) {
+      var selectsRegistered = false;
+
+      $scope.$watch('vm.data', function(data) {
+        if (data.length > 0) {
+          vm.gridOptions.data = data;
+        }
+      });
+
+      gridApi.core.on.rowsRendered($scope, function() {
+        // abort if no actual rows visible (means data hasn't been set yet)
+        if (gridApi.grid.renderContainers.body.visibleRowCache.length === 0) { return; }
+
+        // mark all rows as selected
+        var rowEntities = _.pluck(gridApi.grid.rows, 'entity');
+        _.forEach(rowEntities, function(rowEntity) {
+          gridApi.selection.selectRow(rowEntity);
+        });
+
+        if (!selectsRegistered) {
+          // setup selection callbacks
+          gridApi.selection.on.rowSelectionChanged($scope, function(row) {
+            toggleMuts([row]);
+          });
+
+          gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows) {
+            toggleMuts(rows);
+          });
+          selectsRegistered = true;
+        } else {
+          console.log('selects already registered.');
+        }
+      });
+    }
+
+    vm.gridOptions = {
+      columnDefs: columnDefs,
+      onRegisterApi: onRegisterApi,
+      enableRowSelection: true,
+      multiSelect: true,
+      data: []
+    };
+
     $q.all([
         dsv.tsv({ method:'GET', url: 'data/input.aml31_v1a.tsv.txt' }),
         dsv.tsv({ method:'GET', url: 'data/metadata.tsv.txt' })
       ])
       .then(function(dataTSV) {
-        var vafData = _.map(dataTSV[0].data, function(d) {
+        vm.data = _.map(dataTSV[0].data, function(d) {
           d.basechange = d.basechange .replace('/', '-');
           return d;
         });
-        var metaData = dataTSV[1].data;
 
-        var clusters = _(vafData)
-          .map(function(c) { return Number(c.cluster) })
-          .uniq()
-          .sortBy()
-          .value();
+        angular.copy(vm.data, vm.originalData);
 
-        var clusterScale = clusters.length <= 10 ? d3.scale.category10(): d3.scale.category20();
+        var metaData = vm.metadata = dataTSV[1].data;
 
-        var palette = _.map(clusters, function(c) {return clusterScale(c); });
-
-        var clusterMax = clusters.length;
-
-        vm.vaf1Options.data = getVafData(vafData, 1, palette);
-        vm.vaf1Options.palette = palette;
-        vm.vaf1Options.clusterMax = clusterMax;
-        vm.vaf2Options.data = getVafData(vafData, 2, palette);
-        vm.vaf2Options.palette = palette;
-        vm.vaf2Options.clusterMax = clusterMax;
-        vm.vaf3Options.data = getVafData(vafData, 3, palette);
-        vm.vaf3Options.palette = palette;
-        vm.vaf3Options.clusterMax = clusterMax;
-        vm.parallelCoordsOptions.data = getParallelCoordsData(vafData, metaData, palette);
-        vm.parallelCoordsOptions.tooltipData = getTooltipData(vafData);
-        vm.parallelCoordsOptions.palette = palette;
-        vm.parallelCoordsOptions.clusterMax = clusterMax;
+        updateCharts();
 
         $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
           vm.mutHover = mutation;
           $scope.$apply();
         });
       });
+
+    function updateCharts() {
+      var clusters = _(vm.data)
+        .map(function(c) { return Number(c.cluster) })
+        .uniq()
+        .sortBy()
+        .value();
+
+      var clusterScale = clusters.length <= 10 ? d3.scale.category10(): d3.scale.category20();
+
+      vm.palette  = _.map(clusters, function(c) {return clusterScale(c); });
+
+      var clusterMax = clusters.length;
+
+      vm.vaf1Options.data = getVafData(vm.data, 1, vm.palette);
+      vm.vaf1Options.palette = vm.palette;
+      vm.vaf1Options.clusterMax = clusterMax;
+      vm.vaf2Options.data = getVafData(vm.data, 2, vm.palette);
+      vm.vaf2Options.palette = vm.palette;
+      vm.vaf2Options.clusterMax = clusterMax;
+      vm.vaf3Options.data = getVafData(vm.data, 3, vm.palette);
+      vm.vaf3Options.palette = vm.palette;
+      vm.vaf3Options.clusterMax = clusterMax;
+      vm.parallelCoordsOptions.data = getParallelCoordsData(vm.data, vm.metadata, vm.palette);
+      vm.parallelCoordsOptions.tooltipData = getTooltipData(vm.data);
+      vm.parallelCoordsOptions.palette = vm.palette;
+      vm.parallelCoordsOptions.clusterMax = clusterMax;
+    }
 
     function getVafData(data, chart, palette) {
       var specs = {
@@ -223,6 +303,7 @@
     function getMutationKey(mut) {
       return [mut.chr, mut.pos, mut.basechange].join('|');
     }
+
     function parseAnnotation(ann) {
       return _(ann.split(';'))
         .map(function(ann) { return ann.split(':');})
@@ -230,7 +311,40 @@
         .value()
     }
 
+    function toggleMuts(rows) {
+      console.log('toggleMuts called on rows: ');
+      console.log(rows);
+      // for each row
+      _.forEach(rows, function(row) {
+        if(row.isSelected) {
+          var d = _.find(vm.data, getMutFromRow(row));
+          if(_.isUndefined(d)) {
+            d = _.find(vm.originalData, getMutFromRow(row));
+            vm.data.concat(d);
+          } else {
+            return;
+         }
+        } else {
+          _.drop(vm.data, getMutFromRow(row));
+        }
+        updateCharts();
+      });
+      // if isSelected
+      // find in vm.data, if it's there do nothing
+      // if it's not there, find it in originalData and add it back to data
 
+      // if isSelected === false
+      // find in data, if not there, do nothing
+      // if there, remove
+    }
+
+    function getMutFromRow(row) {
+      return {
+        chr: row.entity.chr,
+        pos: row.entity.pos,
+        basechange: row.entity.basechange
+      }
+    }
   }
 
 })();
