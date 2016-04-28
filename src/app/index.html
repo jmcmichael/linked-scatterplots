@@ -13,31 +13,40 @@
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/figures/linkedVaf/linkedVaf.css">
     <!-- endinject -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   </head>
   <body>
-    <div class="linkedVaf" ng-controller="linkedVafController">
-      <div class="chart-container">
-        <vaf-scatterplot
-          id="vaf1"
-          class="vaf-scatterplot"
-          options="vm.vaf1Options">
-        </vaf-scatterplot>
-        <vaf-scatterplot
-          id="vaf2"
-          class="vaf-scatterplot"
-          options="vm.vaf2Options">
-        </vaf-scatterplot>
-        <vaf-scatterplot
-          id="vaf3"
-          class="vaf-scatterplot"
-          options="vm.vaf3Options">
-        </vaf-scatterplot>
-        <vaf-parallel-coords
-          id="parallel-coords"
-          options="vm.parallelCoordsOptions">
-        </vaf-parallel-coords>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="linkedVaf" ng-controller="linkedVafController">
+            <div class="chart-container">
+              <vaf-scatterplot
+                id="vaf1"
+                class="vaf-scatterplot"
+                options="vm.vaf1Options">
+              </vaf-scatterplot>
+              <vaf-scatterplot
+                id="vaf2"
+                class="vaf-scatterplot"
+                options="vm.vaf2Options">
+              </vaf-scatterplot>
+              <vaf-scatterplot
+                id="vaf3"
+                class="vaf-scatterplot"
+                options="vm.vaf3Options">
+              </vaf-scatterplot>
+              <vaf-parallel-coords
+                id="parallel-coords"
+                options="vm.parallelCoordsOptions">
+              </vaf-parallel-coords>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
     <!-- inject:vendor:js -->
     <script src="/angular/angular.js"></script>
     <script src="/d3/d3.js"></script>
