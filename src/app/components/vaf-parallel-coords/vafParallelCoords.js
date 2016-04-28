@@ -148,6 +148,15 @@
 
         $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
         $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
+
+        // axis titles
+        x.titleShape
+          .text(options.xAxis)
+          .style('font-weight', 'bold');
+
+        y.titleShape
+          .text(options.yAxis)
+          .style('font-weight', 'bold');
       }
 
       function getMutKeyFromEvent(d3Event) {

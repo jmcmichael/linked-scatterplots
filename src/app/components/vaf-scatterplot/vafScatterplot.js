@@ -130,8 +130,13 @@
         $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
         // axis titles
-        xAxis.titleShape.text(options.xAxis);
-        yAxis.titleShape.text(options.yAxis);
+        xAxis.titleShape
+          .text(options.xAxis)
+          .style('font-weight', 'bold');
+
+        yAxis.titleShape
+          .text(options.yAxis)
+          .style('font-weight', 'bold');
 
       }
     });
