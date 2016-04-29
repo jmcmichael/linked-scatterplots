@@ -38,40 +38,38 @@
       .style('font-weight', 'bold')
       .text(options.title);
 
+    var chart = new dimple.chart(svg);
+
+    chart.setBounds(
+      options.height - options.margin.top - options.margin.bottom,
+      options.width - options.margin.left - options.margin.right
+    );
+
+    chart.setMargins(
+      options.margin.left,
+      options.margin.top,
+      options.margin.right,
+      options.margin.bottom
+    );
+
+    $scope.chart = chart;
+    var x = chart.addCategoryAxis('x', 'timepointLabel');
+    x.addOrderRule('timepoint');
+    var y = chart.addMeasureAxis('y', 'vaf');
+    var c = chart.addColorAxis('cluster', ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]);
+    c.overrideMax = options.clusterMax;
+    c.overrideMin = 1;
+
+    var series = chart.addSeries('series', dimple.plot.line);
+    series.lineMarkers = true;
+
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
-        var tooltipData = options.tooltipData;
-
-        var chart = new dimple.chart(svg);
-
-        $scope.chart = chart;
-
-        chart.setBounds(
-          options.height - options.margin.top - options.margin.bottom,
-          options.width - options.margin.left - options.margin.right
-        );
-
-        chart.setMargins(
-          options.margin.left,
-          options.margin.top,
-          options.margin.right,
-          options.margin.bottom
-        );
-
-        var x = chart.addCategoryAxis('x', 'timepointLabel');
-        x.addOrderRule('timepoint');
-        var y = chart.addMeasureAxis('y', 'vaf');
-        var c = chart.addColorAxis('cluster', ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]);
-        c.overrideMax = options.clusterMax;
-        c.overrideMin = 1;
-
-        var series = chart.addSeries('series', dimple.plot.line);
-        series.lineMarkers = true;
 
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
         chart.data = data;
-        chart.draw();
+        chart.draw(1000);
 
         // post-render styling (TODO: implement with dimple custom format?)
         chart.svg.selectAll('path.dimple-line')
