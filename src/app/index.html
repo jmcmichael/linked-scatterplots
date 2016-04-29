@@ -51,23 +51,33 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-1" ng-repeat="color in vm.palette" ng-style="{ 'background-color': color }">
-            {{color}}
+          <div class="col-xs-12">
+            <h5>Cluster Key:</h5>
+            <ul class=" cluster-key">
+              <li class="cluster-item"
+                  ng-style="{ 'background-color': color }"
+                  ng-repeat="color in vm.palette">cluster {{ $index }}</li>
+            </ul>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-12">
-            <input type="button" ng-click="vm.includeAll()" value="Include All"/>
-            <input type="button" ng-click="vm.includeShown()" value="Include Shown"/>
-            <input type="button" ng-click="vm.excludeShown()" value="Exclude Shown"/>
+            <div class="grid-buttons">
+              <input type="button" ng-click="vm.includeAll()" value="Include All"/>
+              <input type="button" ng-click="vm.includeShown()" value="Include Shown"/>
+              <input type="button" ng-click="vm.excludeShown()" value="Exclude Shown"/>
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-12">
-            <div ui-grid="vm.gridOptions"
-                 ui-grid-auto-resize
-                 ui-grid-pagination
-                 ui-grid-selection>
+
+            <div class="grid-block">
+              <div ui-grid="vm.gridOptions"
+                   ui-grid-auto-resize
+                   ui-grid-pagination
+                   ui-grid-selection>
+              </div>
             </div>
           </div>
         </div>
@@ -94,8 +104,8 @@
 
     <!-- inject:js -->
     <script src="/app.js"></script>
-    <script src="/figures/linkedVaf/linkedVaf.js"></script>
     <script src="/components/vaf-scatterplot/vafScatterplot.js"></script>
+    <script src="/figures/linkedVaf/linkedVaf.js"></script>
     <script src="/components/vaf-parallel-coords/vafParallelCoords.js"></script>
     <script src="/services/lodashService.js"></script>
     <script src="/services/dimpleService.js"></script>

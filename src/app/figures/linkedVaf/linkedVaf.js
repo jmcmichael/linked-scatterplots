@@ -162,11 +162,13 @@
     };
 
     vm.includeShown = function() {
-
+      var rows = vm.gridApi.core.getVisibleRows();
+      setMuts(rows, true);
     };
 
     vm.excludeShown = function() {
-
+      var rows = vm.gridApi.core.getVisibleRows();
+      setMuts(rows, false);
     };
 
     function onRegisterApi(gridApi) {
@@ -198,7 +200,7 @@
           });
 
           gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows) {
-            toggleMuts(rows);
+            setMuts(rows);
           });
           selectsRegistered = true;
         } else {
@@ -328,9 +330,26 @@
         .value()
     }
 
+    function setMuts(rows, selected) {
+      _.forEach(rows, function(row) {
+        if(row.isSelected && selected === false) {
+          _.remove(vm.data, getMutFromRow(row));
+          row.setSelected(false);
+        } else if(!row.isSelected && selected === true) {
+          var d = _.find(vm.data, getMutFromRow(row));
+          if(_.isUndefined(d)) {
+            d = _.find(vm.originalData, getMutFromRow(row));
+            vm.data.push(d);
+            row.setSelected(true)
+          } else {
+            row.setSelected(true)
+          }
+        }
+      });
+      updateCharts();
+    }
+
     function toggleMuts(rows) {
-      console.log('toggleMuts called on rows: ');
-      console.log(rows);
       // for each row
       _.forEach(rows, function(row) {
         if(row.isSelected) {
