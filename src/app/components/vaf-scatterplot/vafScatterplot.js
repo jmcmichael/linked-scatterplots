@@ -9,7 +9,8 @@
     var directive = {
       restrict: 'EA',
       scope: {
-        options: '='
+        options: '=',
+        palette: '='
       },
       controller: vafScatterplotController
 
@@ -56,17 +57,17 @@
 
     var xAxis = chart.addMeasureAxis('x', 'x');
     var yAxis = chart.addMeasureAxis('y', 'y');
+    var colorAxis = chart.addColorAxis('cluster', $scope.palette);
+
+    var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
 
     $scope.$watch('options.data', function(data) {
       if (data.length > 0) {
-        var colorAxis = chart.addColorAxis('cluster', options.palette);
+        series.getTooltipText = _.partial(getTooltipText, data, options);
 
         xAxis.overrideMax = options.xMax;
         yAxis.overrideMax = options.yMax;
 
-        var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
-
-        series.getTooltipText = _.partial(getTooltipText, data, options);
         chart.data = data;
         chart.draw(1000);
 

@@ -4,7 +4,7 @@
     .controller('linkedVafController', linkedVafController);
 
   // @ngInject
-  function linkedVafController($scope, $rootScope, $q, d3, dsv, _) {
+  function linkedVafController($scope, $rootScope, $q, uiGridConstants, d3, dsv, _) {
     console.log('linkedVafController loaded.');
     var vm = $scope.vm = {};
 
@@ -23,6 +23,7 @@
     };
 
     vm.mutHover = {};
+    vm.palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
 
     var vafWidth = 380,
       vafHeight = 380,
@@ -109,7 +110,19 @@
     var columnDefs = [
       {
         name: 'CHR',
-        field: 'chr'
+        field: 'chr',
+        filter: {
+          condition: uiGridConstants.filter.EXACT
+        },
+        enableFiltering: true
+      },
+      {
+        name: 'Cluster',
+        field: 'cluster',
+        filter: {
+          condition: uiGridConstants.filter.EXACT
+        },
+        enableFiltering: true
       },
       {
         name: 'POS',
@@ -132,6 +145,15 @@
         field: 'vaf3'
       }
     ];
+
+    vm.gridOptions = {
+      columnDefs: columnDefs,
+      onRegisterApi: onRegisterApi,
+      enableRowSelection: true,
+      enableFiltering: true,
+      multiSelect: true,
+      data: []
+    };
 
     function onRegisterApi(gridApi) {
       var selectsRegistered = false;
@@ -169,14 +191,6 @@
       });
     }
 
-    vm.gridOptions = {
-      columnDefs: columnDefs,
-      onRegisterApi: onRegisterApi,
-      enableRowSelection: true,
-      multiSelect: true,
-      data: []
-    };
-
     $q.all([
         dsv.tsv({ method:'GET', url: 'data/input.aml31_v1a.tsv.txt' }),
         dsv.tsv({ method:'GET', url: 'data/metadata.tsv.txt' })
@@ -206,28 +220,14 @@
         .sortBy()
         .value();
 
-      var clusterScale = clusters.length <= 10 ? d3.scale.category10(): d3.scale.category20();
-
-      vm.palette  = _.map(clusters, function(c) {return clusterScale(c); });
-
-      var clusterMax = clusters.length;
-
-      vm.vaf1Options.data = getVafData(vm.data, 1, vm.palette);
-      vm.vaf1Options.palette = vm.palette;
-      vm.vaf1Options.clusterMax = clusterMax;
-      vm.vaf2Options.data = getVafData(vm.data, 2, vm.palette);
-      vm.vaf2Options.palette = vm.palette;
-      vm.vaf2Options.clusterMax = clusterMax;
-      vm.vaf3Options.data = getVafData(vm.data, 3, vm.palette);
-      vm.vaf3Options.palette = vm.palette;
-      vm.vaf3Options.clusterMax = clusterMax;
+      vm.vaf1Options.data = getVafData(vm.data, 1);
+      vm.vaf2Options.data = getVafData(vm.data, 2);
+      vm.vaf3Options.data = getVafData(vm.data, 3);
       vm.parallelCoordsOptions.data = getParallelCoordsData(vm.data, vm.metadata, vm.palette);
       vm.parallelCoordsOptions.tooltipData = getTooltipData(vm.data);
-      vm.parallelCoordsOptions.palette = vm.palette;
-      vm.parallelCoordsOptions.clusterMax = clusterMax;
     }
 
-    function getVafData(data, chart, palette) {
+    function getVafData(data, chart) {
       var specs = {
         1: {
           x: 'vaf1',

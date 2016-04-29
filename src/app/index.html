@@ -27,21 +27,25 @@
               <vaf-scatterplot
                 id="vaf1"
                 class="vaf-scatterplot"
-                options="vm.vaf1Options">
+                options="vm.vaf1Options"
+                palette="vm.palette">
               </vaf-scatterplot>
               <vaf-scatterplot
                 id="vaf2"
                 class="vaf-scatterplot"
-                options="vm.vaf2Options">
+                options="vm.vaf2Options"
+                palette="vm.palette">
               </vaf-scatterplot>
               <vaf-scatterplot
                 id="vaf3"
                 class="vaf-scatterplot"
-                options="vm.vaf3Options">
+                options="vm.vaf3Options"
+                palette="vm.palette">
               </vaf-scatterplot>
               <vaf-parallel-coords
                 id="parallel-coords"
-                options="vm.parallelCoordsOptions">
+                options="vm.parallelCoordsOptions"
+                palette="vm.palette">
               </vaf-parallel-coords>
             </div>
           </div>
@@ -84,8 +88,8 @@
     <!-- inject:js -->
     <script src="/app.js"></script>
     <script src="/figures/linkedVaf/linkedVaf.js"></script>
-    <script src="/components/vaf-scatterplot/vafScatterplot.js"></script>
     <script src="/components/vaf-parallel-coords/vafParallelCoords.js"></script>
+    <script src="/components/vaf-scatterplot/vafScatterplot.js"></script>
     <script src="/services/lodashService.js"></script>
     <script src="/services/dimpleService.js"></script>
     <script src="/services/d3Service.js"></script>
