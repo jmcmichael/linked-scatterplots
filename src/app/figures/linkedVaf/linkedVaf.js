@@ -151,11 +151,27 @@
       onRegisterApi: onRegisterApi,
       enableRowSelection: true,
       enableFiltering: true,
+      enableSelectAll: false,
+      showGridFooter: true,
       multiSelect: true,
       data: []
     };
 
+    vm.includeAll = function() {
+      vm.gridApi.selection.selectAllRows();
+    };
+
+    vm.includeShown = function() {
+
+    };
+
+    vm.excludeShown = function() {
+
+    };
+
     function onRegisterApi(gridApi) {
+      vm.gridApi = gridApi;
+
       var selectsRegistered = false;
       var dataInit = false;
       $scope.$watch('vm.data', function(data) {
@@ -169,13 +185,13 @@
         // abort if no actual rows visible (means data hasn't been set yet)
         if (gridApi.grid.renderContainers.body.visibleRowCache.length === 0) { return; }
 
-        // mark all rows as selected
-        var rowEntities = _.pluck(gridApi.grid.rows, 'entity');
-        _.forEach(rowEntities, function(rowEntity) {
-          gridApi.selection.selectRow(rowEntity);
-        });
-
         if (!selectsRegistered) {
+          // mark all rows as selected
+          var rowEntities = _.pluck(gridApi.grid.rows, 'entity');
+          _.forEach(rowEntities, function(rowEntity) {
+            gridApi.selection.selectRow(rowEntity);
+          });
+
           // setup selection callbacks
           gridApi.selection.on.rowSelectionChanged($scope, function(row) {
             toggleMuts([row]);
@@ -321,15 +337,15 @@
           var d = _.find(vm.data, getMutFromRow(row));
           if(_.isUndefined(d)) {
             d = _.find(vm.originalData, getMutFromRow(row));
-            vm.data.concat(d);
+            vm.data.push(d);
           } else {
             return;
          }
         } else {
           _.remove(vm.data, getMutFromRow(row));
         }
-        updateCharts();
       });
+      updateCharts();
       // if isSelected
       // find in vm.data, if it's there do nothing
       // if it's not there, find it in originalData and add it back to data

@@ -62,7 +62,6 @@
     var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
 
     $scope.$watch('options.data', function(data) {
-      if (data.length > 0) {
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
         xAxis.overrideMax = options.xMax;
@@ -139,8 +138,6 @@
         yAxis.titleShape
           .text(options.yAxis)
           .style('font-weight', 'bold');
-
-      }
     });
 
     function getMutKeyFromEvent(d3Event) {

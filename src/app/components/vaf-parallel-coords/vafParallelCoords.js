@@ -64,8 +64,6 @@
     series.lineMarkers = true;
 
     $scope.$watch('options.data', function(data) {
-      if (data.length > 0) {
-
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
         chart.data = data;
@@ -155,7 +153,6 @@
         y.titleShape
           .text(options.yAxis)
           .style('font-weight', 'bold');
-      }
 
       function getMutKeyFromEvent(d3Event) {
         var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
