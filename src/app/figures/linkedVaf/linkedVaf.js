@@ -188,8 +188,22 @@
       setMuts(rows, false);
     };
 
-    vm.toggleCluster= function(cluster) {
-
+    vm.toggleCluster = function(cluster) {
+      cluster = String(cluster);
+      if(vm.clusterIncluded(cluster)) {
+        _.remove(vm.data, {cluster: cluster});
+        updateCharts();
+      } else {
+        var muts = _.filter(vm.originalData, { cluster: cluster});
+        var incMuts = _.filter(vm.data, {cluster: cluster});
+        _.forEach(incMuts, function(imut) {
+          _.remove(muts, imut);
+        });
+        _.forEach(muts, function(mut) {
+          vm.data.push(mut);
+        });
+        updateCharts();
+      }
     };
 
     function onRegisterApi(gridApi) {
