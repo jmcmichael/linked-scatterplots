@@ -183,26 +183,21 @@
       setMuts(rows, false);
     };
 
-    vm.excludeVisisbleOnly = function() {
+    vm.excludeVisibleOnly = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, false);
     };
 
     vm.toggleCluster = function(cluster) {
       cluster = String(cluster);
+      var clusterRows = _.filter(vm.gridApi.grid.rows, function(row) {
+        return row.entity.cluster === cluster;
+      });
       if(vm.clusterIncluded(cluster)) {
-        _.remove(vm.data, {cluster: cluster});
-        updateCharts();
+        setMuts(clusterRows, false);
       } else {
-        var muts = _.filter(vm.originalData, { cluster: cluster});
-        var incMuts = _.filter(vm.data, {cluster: cluster});
-        _.forEach(incMuts, function(imut) {
-          _.remove(muts, imut);
-        });
-        _.forEach(muts, function(mut) {
-          vm.data.push(mut);
-        });
-        updateCharts();
+        // set mutations and update charts
+        setMuts(clusterRows, true);
       }
     };
 
@@ -234,9 +229,6 @@
             toggleMuts([row]);
           });
 
-          gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows) {
-            setMuts(rows);
-          });
           selectsRegistered = true;
         } else {
           console.log('selects already registered.');
