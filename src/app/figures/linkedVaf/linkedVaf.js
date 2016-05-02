@@ -138,7 +138,27 @@
       },
       {
         name: 'Basechange',
-        field: 'basechange'
+        field: 'basechange',
+        enableFiltering: true,
+        filter: {
+          type: uiGridConstants.filter.SELECT,
+          term: null,
+          disableCancelFilterButton: false,
+          selectOptions: [
+            { value: null, label: '--' },
+            { value: 'A-C', label: 'A-C'},
+            { value: 'A-G', label: 'A-G'},
+            { value: 'C-A', label: 'C-A'},
+            { value: 'C-G', label: 'C-G'},
+            { value: 'C-T', label: 'C-T'},
+            { value: 'G-A', label: 'G-A'},
+            { value: 'G-C', label: 'G-C'},
+            { value: 'G-T', label: 'G-T'},
+            { value: 'T-A', label: 'T-A'},
+            { value: 'T-C', label: 'T-C'}
+          ]
+            //['A-C', 'A-G', 'C-A', 'C-G', 'C-T', 'G-A', 'G-C', 'G-T', 'T-A', 'T-C']
+        }
       },
       {
         name: 'VAF 1',
@@ -166,7 +186,7 @@
     };
 
     vm.includeAll = function() {
-      vm.gridApi.selection.selectAllRows();
+      setMuts(vm.gridApi.grid.rows, true);
     };
 
     vm.includeVisible = function() {

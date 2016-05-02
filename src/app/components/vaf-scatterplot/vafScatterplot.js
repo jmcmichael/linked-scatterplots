@@ -68,7 +68,7 @@
         yAxis.overrideMax = options.yMax;
 
         chart.data = data;
-        chart.draw(1000);
+        chart.draw(500);
 
         // post-render styling (TODO: implement with dimple custom format?)
         chart.svg.selectAll('circle.dimple-bubble')
