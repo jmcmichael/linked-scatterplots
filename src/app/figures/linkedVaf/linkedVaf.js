@@ -25,6 +25,14 @@
     vm.mutHover = {};
     vm.palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
 
+    vm.includedClusters = [];
+
+    vm.clusterIncluded = function(cluster) {
+      var oCount = _.filter(vm.originalData, { cluster: String(cluster) });
+      var dCount = _.filter(vm.data, { cluster: String(cluster) });
+      return dCount.length === oCount.length;
+    };
+
     var vafWidth = 380,
       vafHeight = 380,
       vafMargin = {
@@ -161,14 +169,27 @@
       vm.gridApi.selection.selectAllRows();
     };
 
-    vm.includeShown = function() {
+    vm.includeVisible = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, true);
     };
 
-    vm.excludeShown = function() {
+    vm.includeVisibleOnly = function() {
+      var rows = vm.gridApi.core.getVisibleRows();
+    };
+
+    vm.excludeVisible = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, false);
+    };
+
+    vm.excludeVisisbleOnly = function() {
+      var rows = vm.gridApi.core.getVisibleRows();
+      setMuts(rows, false);
+    };
+
+    vm.toggleCluster= function(cluster) {
+
     };
 
     function onRegisterApi(gridApi) {
