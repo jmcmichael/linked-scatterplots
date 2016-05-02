@@ -51,13 +51,16 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-xs-2">
+            <span class="pull-right"><strong>Clusters:</strong></span>
+          </div>
+          <div class="col-xs-10">
             <ul class=" cluster-key">
               <li class="cluster-item"
                   ng-repeat="color in vm.palette"
                   ng-click="vm.toggleCluster($index + 1)"
-                  ng-style="{ 'background-color': vm.clusterIncluded($index + 1) ? color : '#EFEFEF', 'border-color': vm.clusterIncluded($index + 1) ? color : 'darkgrey'}"
-                  ng-class="{ 'included': vm.clusterIncluded($index + 1), 'excluded': !vm.clusterIncluded($index + 1)}">
+                  ng-style="{ 'background-color': vm.allClusterIncluded($index + 1) ? color : '#EFEFEF', 'border-color': vm.clusterIncluded($index + 1) ? color : 'darkgrey'}"
+                  ng-class="{ 'included': vm.allClusterIncluded($index + 1), 'excluded': !vm.allClusterIncluded($index + 1)}">
                 cluster {{ $index + 1 }}
               </li>
             </ul>
@@ -68,21 +71,62 @@
           <div class="col-xs-2">
             <ul class="button-menu">
               <li>
-                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeAll()">Include All</a>
+                <a class="btn btn-xs btn-default btn-block"
+                   ng-click="vm.includeAll()"
+                   title="Show all variants">Include All</a>
               </li>
               <li>
-                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeVisible()">Include Filtered</a>
+                <a class="btn btn-xs btn-default btn-block"
+                   ng-click="vm.includeFiltered()"
+                   title="Add currently filtered variants to charts">Include Filtered</a>
               </li>
               <li>
-                <a class="btn btn-xs btn-default btn-block" ng-click="vm.excludeVisible()">Exclude Filtered</a>
+                <a class="btn btn-xs btn-default btn-block"
+                   ng-click="vm.excludeFiltered()"
+                   title="Remove currently filtered variants from charts">Exclude Filtered</a>
               </li>
               <li>
-                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeVisibleOnly()" value="Include Only Visible">Include Only Filtered</a>
+                <a class="btn btn-xs btn-default btn-block"
+                   ng-click="vm.includeFilteredOnly()"
+                   title="Include only filtered variants in charts">Include Only Filtered</a>
               </li>
               <li>
-                <a class="btn btn-xs btn-default btn-block" ng-click="vm.excludeVisibleOnly()">Exclude Only Filtered</a>
+                <a class="btn btn-xs btn-default btn-block"
+                   ng-click="vm.excludeFilteredOnly()"
+                   title="Include only non-filtered variants in charts">Exclude Only Filtered</a>
               </li>
             </ul>
+            <div class="info">
+              <table class="table table-compact table-bordered">
+                <tr>
+                  <td class="l">
+                    Total Variants:
+                  </td>
+                  <td class="value">
+                    {{ vm.originalData.length }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="l">
+                    Included Variants:
+                  </td>
+                  <td class="value">
+                    {{ vm.gridApi.grid.selection.selectedCount }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="l">
+                    Filtered Variants:
+                  </td>
+                  <td class="value">
+                    {{ vm.gridApi.core.getVisibleRows().length }}
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="instructions">
+              <p class="small">Use the cluster key and data grid to control which variants are included in the charts. Click a cluster in the key to toggle the display of variants in that cluster. Use the grid filters and buttons above to adjust the set of displayed variants.</p>
+            </div>
 
           </div>
           <div class="col-xs-10">
@@ -90,7 +134,6 @@
             <div class="grid-block">
               <div ui-grid="vm.gridOptions"
                    ui-grid-auto-resize
-                   ui-grid-pagination
                    ui-grid-selection>
               </div>
             </div>

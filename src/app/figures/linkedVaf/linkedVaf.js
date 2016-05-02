@@ -28,6 +28,10 @@
     vm.includedClusters = [];
 
     vm.clusterIncluded = function(cluster) {
+      return _.filter(vm.data, { cluster: String(cluster) }).length > 0;
+    };
+
+    vm.allClusterIncluded = function(cluster) {
       var oCount = _.filter(vm.originalData, { cluster: String(cluster) });
       var dCount = _.filter(vm.data, { cluster: String(cluster) });
       return dCount.length === oCount.length;
@@ -48,7 +52,7 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
-      title: 'Relapse 2 vs. Tumor Variant Allele Frequency',
+      title: 'Relapse 2 vs. Tumor VAF',
       xAxis: 'Tumor Variant Allele Frequency',
       yAxis: 'Relapse 2 Variant Allele Frequency',
       id: 'vaf1',
@@ -101,16 +105,17 @@
 
     var columnDefs = [
       {
-        name: 'CHR',
-        field: 'chr',
+        name: 'Cluster',
+        field: 'cluster',
+        sort: { direction: 'asc', priority: 0 },
         filter: {
           condition: uiGridConstants.filter.EXACT
         },
         enableFiltering: true
       },
       {
-        name: 'Cluster',
-        field: 'cluster',
+        name: 'CHR',
+        field: 'chr',
         filter: {
           condition: uiGridConstants.filter.EXACT
         },
@@ -163,11 +168,12 @@
 
     vm.gridOptions = {
       columnDefs: columnDefs,
+      minRowsToShow: 20,
       onRegisterApi: onRegisterApi,
       enableRowSelection: true,
       enableFiltering: true,
       enableSelectAll: false,
-      showGridFooter: true,
+      showGridFooter: false,
       multiSelect: true,
       data: []
     };
@@ -176,24 +182,24 @@
       setMuts(vm.gridApi.grid.rows, true);
     };
 
-    vm.includeVisible = function() {
+    vm.includeFiltered = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, true);
     };
 
-    vm.includeVisibleOnly = function() {
+    vm.includeFilteredOnly = function() {
       var iRows = _.filter(vm.gridApi.grid.rows, { visible: false });
       var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
       setMuts(iRows, false);
       setMuts(vRows, true);
     };
 
-    vm.excludeVisible = function() {
+    vm.excludeFiltered = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, false);
     };
 
-    vm.excludeVisibleOnly = function() {
+    vm.excludeFilteredOnly = function() {
       var iRows = _.filter(vm.gridApi.grid.rows, { visible: false });
       var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
       setMuts(iRows, true);
@@ -205,7 +211,7 @@
       var clusterRows = _.filter(vm.gridApi.grid.rows, function(row) {
         return row.entity.cluster === cluster;
       });
-      if(vm.clusterIncluded(cluster)) {
+      if(vm.allClusterIncluded(cluster)) {
         setMuts(clusterRows, false);
       } else {
         // set mutations and update charts
