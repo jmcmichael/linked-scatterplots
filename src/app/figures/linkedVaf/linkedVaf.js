@@ -42,11 +42,7 @@
         left: 50
       },
       bubbleOpacity = 0.5,
-      pathOpacity = 0.3,
-      vafXMin = 0,
-      vafXMax = 65,
-      vafYMin = 0,
-      vafYMax = 65;
+      pathOpacity = 0.3;
 
     vm.vaf1Options = {
       width: vafWidth,
@@ -55,10 +51,6 @@
       title: 'Relapse 2 vs. Tumor Variant Allele Frequency',
       xAxis: 'Tumor Variant Allele Frequency',
       yAxis: 'Relapse 2 Variant Allele Frequency',
-      xMin: vafXMin,
-      xMax: vafXMax,
-      yMin: vafYMin,
-      yMax: vafYMax,
       id: 'vaf1',
       bubbleOpacity: bubbleOpacity,
       data: []
@@ -71,10 +63,6 @@
       title: 'Tumor vs. Relapse 1 VAF',
       xAxis: 'Tumor Variant Allele Frequency',
       yAxis: 'Relapse 1 Variant Allele Frequency',
-      xMin: vafXMin,
-      xMax: vafXMax,
-      yMin: vafYMin,
-      yMax: vafYMax,
       id: 'vaf2',
       bubbleOpacity: bubbleOpacity,
       data: []
@@ -87,10 +75,6 @@
       title: 'Relapse 2 vs. Relapse 1 VAF',
       xAxis: 'Relapse 2 Variant Allele Frequency',
       yAxis: 'Relapse 1 Variant Allele Frequency',
-      xMin: vafXMin,
-      xMax: vafXMax,
-      yMin: vafYMin,
-      yMax: vafYMax,
       id: 'vaf3',
       bubbleOpacity: bubbleOpacity,
       data: []
@@ -162,15 +146,18 @@
       },
       {
         name: 'VAF 1',
-        field: 'vaf1'
+        field: 'vaf1',
+        enableFiltering: false
       },
       {
         name: 'VAF 2',
-        field: 'vaf2'
+        field: 'vaf2',
+        enableFiltering: false
       },
       {
         name: 'VAF 3',
-        field: 'vaf3'
+        field: 'vaf3',
+        enableFiltering: false
       }
     ];
 
@@ -195,7 +182,10 @@
     };
 
     vm.includeVisibleOnly = function() {
-      var rows = vm.gridApi.core.getVisibleRows();
+      var iRows = _.filter(vm.gridApi.grid.rows, { visible: false });
+      var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
+      setMuts(iRows, false);
+      setMuts(vRows, true);
     };
 
     vm.excludeVisible = function() {
@@ -204,8 +194,10 @@
     };
 
     vm.excludeVisibleOnly = function() {
-      var rows = vm.gridApi.core.getVisibleRows();
-      setMuts(rows, false);
+      var iRows = _.filter(vm.gridApi.grid.rows, { visible: false });
+      var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
+      setMuts(iRows, true);
+      setMuts(vRows, false);
     };
 
     vm.toggleCluster = function(cluster) {
@@ -285,9 +277,18 @@
         .sortBy()
         .value();
 
+      var maxVaf = _.max([
+        _.max(_.map(vm.data, function(d) { return Number(d.vaf1)})),
+        _.max(_.map(vm.data, function(d) { return Number(d.vaf2)})),
+        _.max(_.map(vm.data, function(d) { return Number(d.vaf3)}))
+      ]);
+
       vm.vaf1Options.data = getVafData(vm.data, 1);
+      vm.vaf1Options.xMax = vm.vaf1Options.yMax = maxVaf;
       vm.vaf2Options.data = getVafData(vm.data, 2);
+      vm.vaf2Options.xMax = vm.vaf2Options.yMax = maxVaf;
       vm.vaf3Options.data = getVafData(vm.data, 3);
+      vm.vaf3Options.xMax = vm.vaf3Options.yMax = maxVaf;
       vm.parallelCoordsOptions.data = getParallelCoordsData(vm.data, vm.metadata, vm.palette);
       vm.parallelCoordsOptions.tooltipData = getTooltipData(vm.data);
     }

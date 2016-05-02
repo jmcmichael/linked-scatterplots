@@ -63,19 +63,29 @@
             </ul>
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-12">
-            <div class="grid-buttons">
-              <input type="button" ng-click="vm.includeAll()" value="Include All"/>
-              <input type="button" ng-click="vm.includeVisible()" value="Include Visible"/>
-              <input type="button" ng-click="vm.includeVisibleOnly()" value="Include Only Visible"/>
-              <input type="button" ng-click="vm.excludeVisible()" value="Exclude Visible"/>
-              <input type="button" ng-click="vm.excludeVisibleOnly()" value="Exclude Only Visible"/>
-            </div>
+
+        <div class="row chart-ui">
+          <div class="col-xs-2">
+            <ul class="button-menu">
+              <li>
+                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeAll()">Include All</a>
+              </li>
+              <li>
+                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeVisible()">Include Filtered</a>
+              </li>
+              <li>
+                <a class="btn btn-xs btn-default btn-block" ng-click="vm.excludeVisible()">Exclude Filtered</a>
+              </li>
+              <li>
+                <a class="btn btn-xs btn-default btn-block" ng-click="vm.includeVisibleOnly()" value="Include Only Visible">Include Only Filtered</a>
+              </li>
+              <li>
+                <a class="btn btn-xs btn-default btn-block" ng-click="vm.excludeVisibleOnly()">Exclude Only Filtered</a>
+              </li>
+            </ul>
+
           </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-12">
+          <div class="col-xs-10">
 
             <div class="grid-block">
               <div ui-grid="vm.gridOptions"

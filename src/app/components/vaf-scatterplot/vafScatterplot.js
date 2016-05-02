@@ -64,8 +64,8 @@
     $scope.$watch('options.data', function(data) {
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
-        xAxis.overrideMax = options.xMax;
-        yAxis.overrideMax = options.yMax;
+        xAxis.overrideMax = _.isUndefined(options.xMax) ? 100 : options.xMax;
+        yAxis.overrideMax = _.isUndefined(options.yMax) ? 100 : options.yMax;
 
         chart.data = data;
         chart.draw(500);
