@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="pancan2App">
+<html ng-app="linkedVafs" ui-tour>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +8,7 @@
     <title>AML31 Figures</title>
 
     <!-- inject:vendor:css -->
+    <link rel="stylesheet" href="/angular-hotkeys/build/hotkeys.css">
     <!-- endinject -->
     <!-- inject:css -->
     <link rel="stylesheet" href="/css/app.css">
@@ -23,7 +24,10 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12">
-            <div class="chart-container">
+            <div class="chart-container"
+                 tour-step="0"
+                 tour-step-title="VAF Scatterplot and Parallel Coordinates Charts"
+                 tour-step-content="The scatterplots show X, while the parallel coordinates chart below shows Y.">
               <vaf-scatterplot
                 id="vaf1"
                 class="vaf-scatterplot"
@@ -55,7 +59,10 @@
             <span class="pull-right"><strong>Clusters:</strong></span>
           </div>
           <div class="col-xs-10">
-            <ul class=" cluster-key">
+            <ul class=" cluster-key"
+                tour-step="1"
+                tour-step-title="Cluster Key"
+                tour-step-content="Clusters are indicated in the charts by the color key. Click a cluster in the key to show or hide that cluster in all charts.">
               <li class="cluster-item"
                   ng-repeat="color in vm.palette"
                   ng-click="vm.toggleCluster($index + 1)"
@@ -63,19 +70,28 @@
                   ng-class="{ 'included': vm.allClusterIncluded($index + 1), 'excluded': !vm.allClusterIncluded($index + 1)}">
                 cluster {{ $index + 1 }}
               </li>
+
             </ul>
           </div>
         </div>
 
         <div class="row chart-ui">
           <div class="col-xs-2">
-            <ul class="button-menu">
-              <li>
+            <ul class="button-menu"
+                tour-step="2"
+                tour-step-title="Variant Filtering Controls"
+                tour-step-content="With the data grid to the right, these buttons control the variants displayed in the charts.">
+              <li
+                tour-step="3"
+                tour-step-title="Include All Button"
+                tour-step-content="Click this button to include all variants in the charts.">
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.includeAll()"
                    title="Show all variants">Include All</a>
               </li>
-              <li>
+              <li tour-step="3"
+                  tour-step-title="Include Filtered"
+                  tour-step-content="Add data grid's filtered results to the currently displayed variants.">
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.includeFiltered()"
                    title="Add currently filtered variants to charts">Include Filtered</a>
@@ -148,17 +164,16 @@
     <script src="/lodash/lodash.js"></script>
     <script src="/dimple/dist/dimple.latest.js"></script>
     <script src="/angular-dsv/angular-dsv.js"></script>
+    <script src="/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="/ngSmoothScroll/lib/angular-smooth-scroll.js"></script>
+    <script src="/angular-sanitize/angular-sanitize.js"></script>
+    <script src="/ez-ng/dist/ez-ng.js"></script>
+    <script src="/angular-hotkeys/build/hotkeys.js"></script>
+    <script src="/angular-ui-tour/dist/angular-ui-tour.js"></script>
     <!-- endinject -->
 
     <!-- CDN JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/api-check/7.5.5/api-check.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-formly/8.2.0/formly.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-formly-templates-bootstrap/6.4.0/angular-formly-templates-bootstrap.min.js"></script>
     <script src="https://cdn.rawgit.com/angular-ui/bower-ui-grid/master/ui-grid.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
-
-
-
 
     <!-- inject:js -->
     <script src="/app.js"></script>

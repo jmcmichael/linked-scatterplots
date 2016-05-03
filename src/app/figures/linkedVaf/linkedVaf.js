@@ -4,7 +4,8 @@
     .controller('linkedVafController', linkedVafController);
 
   // @ngInject
-  function linkedVafController($scope, $rootScope, $q, uiGridConstants, d3, dsv, _) {
+  function linkedVafController($scope, $rootScope, $q,
+                               uiGridConstants, d3, dsv, _) {
     console.log('linkedVafController loaded.');
     var vm = $scope.vm = {};
 
@@ -434,6 +435,10 @@
         pos: row.entity.pos,
         basechange: row.entity.basechange
       }
+    }
+
+    vm.startTour = function() {
+      TourService.start();
     }
   }
 

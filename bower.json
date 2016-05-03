@@ -19,15 +19,14 @@
     "src"
   ],
   "dependencies": {
-    "angular": "~1.4.0",
+    "angular": "latest",
     "d3": "~3.5.6",
     "lodash": "~3.10.0",
     "dimple": "https://github.com/jmcmichael/dimple.git",
-    "angular-dsv": "^1.0.0"
+    "angular-dsv": "^1.0.0",
+    "angular-ui-tour": "~0.5.4"
   },
-  "devDependencies": {
-    "angular-mocks": "~1.2.29"
-  },
+  "devDependencies": {},
   "overrides": {
     "d3-legend": {
       "main": [
@@ -37,8 +36,5 @@
     "dimple": {
       "main": "dist/dimple.latest.js"
     }
-  },
-  "resolutions": {
-    "angular": "~1.4.0"
   }
 }
