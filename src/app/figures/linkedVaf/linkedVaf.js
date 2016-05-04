@@ -1,12 +1,24 @@
 (function () {
   'use strict';
   angular.module('linkedVaf.figures')
-    .controller('linkedVafController', linkedVafController);
+    .controller('LinkedVafController', LinkedVafController)
+    .config(linkedVafConfig);
 
   // @ngInject
-  function linkedVafController($scope, $rootScope, $q,
+  function linkedVafConfig(TourConfigProvider) {
+    var tourConfig = {
+      appendToBody: true
+    };
+
+    _.forEach(tourConfig, function(option, value) {
+      TourConfigProvider.set(option, value);
+    });
+  }
+
+  // @ngInject
+  function LinkedVafController($scope, $rootScope, $q,
                                uiGridConstants, d3, dsv, _) {
-    console.log('linkedVafController loaded.');
+    console.log('LinkedVafController loaded.');
     var vm = $scope.vm = {};
 
     vm.data = [];

@@ -11,8 +11,7 @@
       'ui.grid.pagination',
       'ui.grid.selection',
       'ui.grid.edit',
-      'ui.grid.rowEdit',
-      'bm.uiTour'
+      'ui.grid.rowEdit'
     ])
     .run(appRun)
     .config(appConfig);
