@@ -20,7 +20,7 @@
 
   // @ngInject
   function vafScatterplotController($scope, $rootScope, $element,
-                                    d3, d3dragrect, dimple, _) {
+                                    d3, dimple, _) {
     console.log('vafScatterplotController loaded.');
     var options = $scope.options;
 
@@ -88,15 +88,16 @@
         .on('mouseover', _.partial(mouseoverHandler, options.id, true))
         .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
-      // dragrect
-      var dragBehavior = d3dragrect(d3, svg, xAxis._scale, options.height);
+      var brush = d3.svg.brush()
+        .x(x)
+        .y(y)
+        .on("brushstart", brushstart)
+        .on("brush", brushmove)
+        .on("brushend", brushend);
 
-      dragBehavior.on('dragstart', function(points) {
-        console.log('dragstart.');
-        console.log(dragBehavior.getLastRectData());
-      });
-      // svg.call(dragBehavior);
     });
+
+
 
     /**
      * mouseover/leave callbacks and handlers
@@ -149,6 +150,13 @@
 
     $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
     $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
+
+    function getSelected() {
+      svg.selectAll('circle')
+        .classed('selected', function(d) {
+          return d._selected;
+        })
+    }
 
     function getMutKeyFromEvent(d3Event) {
       var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
