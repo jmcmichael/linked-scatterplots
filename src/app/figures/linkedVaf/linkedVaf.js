@@ -176,6 +176,16 @@
         name: 'VAF 3',
         field: 'vaf3',
         enableFiltering: false
+      },
+      {
+        name: 'Effect',
+        field: 'Effect',
+        enableFiltering: true
+      },
+      {
+        name: 'Gene',
+        field: 'Gene',
+        enableFiltering: true
       }
     ];
 
@@ -239,7 +249,7 @@
       var dataInit = false;
       $scope.$watch('vm.data', function(data) {
         if (data.length > 0 && dataInit === false) {
-          angular.copy(data,vm.gridOptions.data);
+          angular.copy(getGridData(data),vm.gridOptions.data);
           dataInit = true;
         }
       });
@@ -311,6 +321,17 @@
       vm.parallelCoordsOptions.data = getParallelCoordsData(vm.data, vm.metadata, vm.palette);
       vm.parallelCoordsOptions.tooltipData = getTooltipData(vm.data);
     }
+
+    function getGridData(data) {
+      return _(data)
+        .map(function(row) {
+          _.forEach(parseAnnotation(row.annotation), function(val, key) {
+            row[_.capitalize(key)] = val;
+          });
+          return _.omit(row, 'annotation');
+        })
+        .value();
+    };
 
     function getVafData(data, chart) {
       var specs = {

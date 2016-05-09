@@ -6,8 +6,7 @@
     "start": "gulp serve",
     "test": "gulp test"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp": "^3.7.0",
     "gulp-util": "^2.2.14",

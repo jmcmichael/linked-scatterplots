@@ -19,7 +19,8 @@
   }
 
   // @ngInject
-  function vafScatterplotController($scope, $rootScope, $element, d3, dimple, _) {
+  function vafScatterplotController($scope, $rootScope, $element,
+                                    d3, d3dragrect, dimple, _) {
     console.log('vafScatterplotController loaded.');
     var options = $scope.options;
 
@@ -86,6 +87,15 @@
       series.shapes
         .on('mouseover', _.partial(mouseoverHandler, options.id, true))
         .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+
+      // dragrect
+      var dragBehavior = d3dragrect(d3, svg, xAxis._scale, options.height);
+
+      dragBehavior.on('dragstart', function(points) {
+        console.log('dragstart.');
+        console.log(dragBehavior.getLastRectData());
+      });
+      // svg.call(dragBehavior);
     });
 
     /**
