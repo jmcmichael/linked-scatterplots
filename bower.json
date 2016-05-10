@@ -36,5 +36,8 @@
     "dimple": {
       "main": "dist/dimple.latest.js"
     }
+  },
+  "resolutions": {
+    "angular": "1.5.5"
   }
 }
