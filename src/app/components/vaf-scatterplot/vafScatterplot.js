@@ -88,51 +88,22 @@
         .on('mouseover', _.partial(mouseoverHandler, options.id, true))
         .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
-      var brush = chart.svg.append('g')
-        .attr('class', 'brush')
-        .call(d3.svg.brush()
-          .x(xAxis._scale)
-          .y(yAxis._scale)
-          .on('brushend', _.partial(function(s) {
-            var extent = d3.event.target.extent();
-            console.log(JSON.stringify(extent));
-            s.shapes.classed('selected', function(d) {
-              var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
-                && extent[0][1] <= d.cy && d.cy < extent[1][1];
-              console.log(hit);
-              return hit;
-            });
-          }, series)));
+      // var brush = chart.svg.append('g')
+      //   .attr('class', 'brush')
+      //   .call(d3.svg.brush()
+      //     .x(xAxis._scale)
+      //     .y(yAxis._scale)
+      //     .on('brushend', _.partial(function(s) {
+      //       var extent = d3.event.target.extent();
+      //       console.log(JSON.stringify(extent));
+      //       s.shapes.classed('selected', function(d) {
+      //         var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
+      //           && extent[0][1] <= d.cy && d.cy < extent[1][1];
+      //         console.log(hit);
+      //         return hit;
+      //       });
+      //     }, series)));
     });
-
-    function brushstart(series, brush) {
-      console.log('brush start');
-    }
-
-    function brushmove(series, brush) {
-
-      console.log('brush move');
-    }
-
-    function brushend(series, brush) {
-      console.log('brush end');
-      var extent = d3.event.target.extent();
-      series.shapes.classed('selected', function(d) {
-        return extent[0][0] <= d.x && d.x < extent[1][0]
-          && extent[0][1] <= d.y && d.y < extent[1][1];
-      });
-      // var extent = brush.extent();
-      // console.log('extent: ' + JSON.stringify(extent));
-      // series.shapes.classed('selected', function(d) {
-      //   var hit = extent[0][0] <= d.x && d.x < extent[1][0]
-      //     && extent[0][1] <= d.y && d.y < extent[1][1];
-      //   console.log('d.x: ' +  d.x);
-      //   console.log('d.y: ' +  d.x);
-      //   console.log('hit: ' + hit);
-      //   if(hit) { console.log('hit found.')}
-      //   return hit;
-      // });
-    }
 
     /**
      * mouseover/leave callbacks and handlers
