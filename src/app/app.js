@@ -7,11 +7,13 @@
       'linkedVaf.filters',
       'linkedVaf.forms',
       'linkedVaf.figures',
+      'ui.bootstrap',
       'ui.grid.autoResize',
       'ui.grid.pagination',
       'ui.grid.selection',
       'ui.grid.edit',
-      'ui.grid.rowEdit'
+      'ui.grid.rowEdit',
+      'ui.grid.exporter'
     ])
     .run(appRun)
     .config(appConfig);

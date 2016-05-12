@@ -17,7 +17,8 @@
 
   // @ngInject
   function LinkedVafController($scope, $rootScope, $q,
-                               uiGridConstants, d3, dsv, _) {
+                               uiGridConstants, uiGridExporterConstants,
+                               d3, dsv, _) {
     console.log('LinkedVafController loaded.');
     var vm = $scope.vm = {};
 
@@ -65,7 +66,7 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
-      title: 'Relapse 2 vs. Tumor VAF',
+      title: 'Tumor vs. Relapse 2 VAF',
       xAxis: 'Tumor Variant Allele Frequency',
       yAxis: 'Relapse 2 Variant Allele Frequency',
       id: 'vaf1',
@@ -89,9 +90,9 @@
       width: vafWidth,
       height: vafHeight,
       margin: vafMargin,
-      title: 'Relapse 2 vs. Relapse 1 VAF',
-      xAxis: 'Relapse 2 Variant Allele Frequency',
-      yAxis: 'Relapse 1 Variant Allele Frequency',
+      title: 'Relapse 1 vs. Relapse 2 VAF',
+      xAxis: 'Relapse 1 Variant Allele Frequency',
+      yAxis: 'Relapse 2 Variant Allele Frequency',
       id: 'vaf3',
       bubbleOpacity: bubbleOpacity,
       data: []
@@ -159,7 +160,7 @@
             { value: 'T-A', label: 'T-A'},
             { value: 'T-C', label: 'T-C'}
           ]
-            //['A-C', 'A-G', 'C-A', 'C-G', 'C-T', 'G-A', 'G-C', 'G-T', 'T-A', 'T-C']
+          //['A-C', 'A-G', 'C-A', 'C-G', 'C-T', 'G-A', 'G-C', 'G-T', 'T-A', 'T-C']
         }
       },
       {
@@ -198,7 +199,28 @@
       enableSelectAll: false,
       showGridFooter: false,
       multiSelect: true,
-      data: []
+      data: [],
+
+      // data export
+      exporterOlderExcelCompatibility: false,
+      exporterPdfDefaultStyle: { fontSize: 7 },
+      exporterPdfPageSize: 'LETTER',
+      exporterPdfOrientation: 'landscape',
+
+      exporterPdfTableStyle: {
+        margin: [0, 0, 0, 0]
+      },
+      exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'darkgrey'},
+      exporterPdfMaxGridWidth: 630,
+      exporterPdfTableLayout: 'lightHorizontalLines', // does not appear to have any effect :(ch
+
+    };
+
+    vm.exportPopover = {
+      templateUrl: 'figures/linkedVaf/exportDataPopover.tpl.html',
+      title: 'Save a PDF or CSV',
+      include: 'all',
+      type: 'csv'
     };
 
     vm.includeAll = function() {
@@ -253,6 +275,16 @@
           dataInit = true;
         }
       });
+
+      vm.exportData = function() {
+        vm.gridOptions.exporterCsvFilename = 'AML31_VAF.csv'
+        var rows = vm.exportPopover.include === 'all' ? uiGridExporterConstants.ALL : uiGridExporterConstants.VISIBLE;
+        if(vm.exportPopover.type === 'csv') {
+          gridApi.exporter.csvExport(rows, uiGridExporterConstants.ALL);
+        } else {
+          gridApi.exporter.pdfExport(rows, uiGridExporterConstants.ALL);
+        }
+      };
 
       gridApi.core.on.rowsRendered($scope, function() {
         // abort if no actual rows visible (means data hasn't been set yet)
@@ -447,7 +479,7 @@
             vm.data.push(d);
           } else {
             return;
-         }
+          }
         } else {
           _.remove(vm.data, getMutFromRow(row));
         }
