@@ -4,6 +4,8 @@
     .controller('LinkedVafController', LinkedVafController)
     .config(linkedVafConfig);
 
+  angular.modu
+
   // @ngInject
   function linkedVafConfig(TourConfigProvider) {
     var tourConfig = {
@@ -60,7 +62,8 @@
         left: 50
       },
       bubbleOpacity = 0.5,
-      pathOpacity = 0.3;
+      pathOpacity = 0.3,
+      pathHoverWidth = 4;
 
     vm.vaf1Options = {
       width: vafWidth,
@@ -114,6 +117,7 @@
       },
       id: 'vafParallel',
       pathOpacity: pathOpacity,
+      pathHoverWidth: pathHoverWidth,
       data: []
     };
 

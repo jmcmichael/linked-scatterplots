@@ -122,7 +122,15 @@
       });
     };
 
+    var pathWidth;
     var varBubbleOverHandler = function(chart, ngEvent, chartId, d3Event, mutation){
+      var path = chart.svg.select(getPathSelector(mutation));
+
+      pathWidth = path.style('stroke-width');
+
+      path.style('opacity', 1)
+        .style('stroke-width', options.pathHoverWidth);
+
       if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
         // find series w/ matching elements
         var elements = _(chart.data)
@@ -139,6 +147,11 @@
     };
 
     var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
+      var path = chart.svg.select(getPathSelector(mutation));
+
+      path.style('opacity', options.pathOpacity)
+        .style('stroke-width', pathWidth);
+
       if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
         var series = _(chart.data)
           .filter(function(point) {
@@ -157,11 +170,6 @@
     $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
     $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
-    function getMutKeyFromEvent(d3Event) {
-      var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
-      return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: keys[2] };
-    }
-
     function getMutFromEvent(d3Event) {
       var keys = _(_.trimRight(d3Event.key, '_'))
         .split('_')
@@ -174,6 +182,10 @@
 
     function getBubbleSelector(mutation) {
       return 'circle.dimple-marker.dimple-' + _.values(mutation).join('-').toLowerCase();
+    }
+
+    function getPathSelector(mutation) {
+      return 'path.dimple-line.dimple-' + _.values(mutation).join('-').toLowerCase();
     }
 
     function getTooltipText(data, options, d3Event) {
