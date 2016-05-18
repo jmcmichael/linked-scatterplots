@@ -86,7 +86,6 @@
       chart.svg.selectAll('circle.dimple-marker')
         .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
         .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
-
     });
 
     // overwrite mouse events w/ functions that broadcast ng events
@@ -208,8 +207,6 @@
       return _.map(tipObj, function(val, key) {
         return [key, val].join(': ');
       });
-
     }
-
   }
 })();

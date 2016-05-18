@@ -146,15 +146,24 @@
               <li>
                 <button
                   class="btn btn-default btn-xs pull-right col-key btn-block"
-                  uib-popover-placement="bottom"
-                  uib-popover-template="vm.exportPopover.templateUrl">
+                  ng-click="vm.exportData('all')">
 
                   <span class="glyphicon glyphicon-export"
                         aria-hidden="true">
                   </span>
 
-                  Get Data
+                  Get All Data
 
+                </button>
+              </li>
+              <li>
+                <button
+                  class="btn btn-default btn-xs pull-right col-key btn-block"
+                  ng-click="vm.exportData('filtered')">
+                  <span class="glyphicon glyphicon-export"
+                        aria-hidden="true">
+                  </span>
+                  Get Filtered Data
                 </button>
               </li>
             </ul>

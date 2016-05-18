@@ -4,8 +4,6 @@
     .controller('LinkedVafController', LinkedVafController)
     .config(linkedVafConfig);
 
-  angular.modu
-
   // @ngInject
   function linkedVafConfig(TourConfigProvider) {
     var tourConfig = {
@@ -280,14 +278,10 @@
         }
       });
 
-      vm.exportData = function() {
+      vm.exportData = function(select) {
         vm.gridOptions.exporterCsvFilename = 'AML31_VAF.csv'
-        var rows = vm.exportPopover.include === 'all' ? uiGridExporterConstants.ALL : uiGridExporterConstants.VISIBLE;
-        if(vm.exportPopover.type === 'csv') {
-          gridApi.exporter.csvExport(rows, uiGridExporterConstants.ALL);
-        } else {
-          gridApi.exporter.pdfExport(rows, uiGridExporterConstants.ALL);
-        }
+        var rows = select === 'all' ? uiGridExporterConstants.ALL : uiGridExporterConstants.VISIBLE;
+        gridApi.exporter.csvExport(rows, uiGridExporterConstants.ALL);
       };
 
       gridApi.core.on.rowsRendered($scope, function() {
