@@ -130,19 +130,18 @@
       path.style('opacity', 1)
         .style('stroke-width', options.pathHoverWidth);
 
-      if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-        // find series w/ matching elements
-        var elements = _(chart.data)
-          .filter(function(point) {
-            var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
-            return point.series === key;
-          })
-          .value();
+      // find series w/ matching elements
+      var elements = _(chart.data)
+        .filter(function(point) {
+          var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
+          return point.series === key;
+        })
+        .value();
 
-        _.forEach(elements, function(s) {
-          triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', series);
-        });
-      }
+      _.forEach(elements, function(s) {
+        triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseover', series);
+      });
+
     };
 
     var varBubbleLeaveHandler = function(chart, ngEvent, chartId, d3Event, mutation){
@@ -151,19 +150,16 @@
       path.style('opacity', options.pathOpacity)
         .style('stroke-width', pathWidth);
 
-      if (chartId !== options.id) { // only trigger if current chart didn't originate vafBubble event
-        var series = _(chart.data)
-          .filter(function(point) {
-            var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
-            return point.series === key;
-          })
-          .value();
+      var series = _(chart.data)
+        .filter(function(point) {
+          var key = [mutation.chr, mutation.pos, mutation.basechange].join('|');
+          return point.series === key;
+        })
+        .value();
 
-        _.forEach(series, function(s) {
-          triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseleave', s);
-        });
-
-      }
+      _.forEach(series, function(s) {
+        triggerMouseEvent(chart.svg.selectAll(getBubbleSelector(mutation)), 'mouseleave', s);
+      });
     };
 
     $scope.$on('vafBubbleOver', _.partial(varBubbleOverHandler, chart));
