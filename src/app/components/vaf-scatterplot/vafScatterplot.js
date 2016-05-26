@@ -100,17 +100,21 @@
         $rootScope.$broadcast('vafSelected', selected);
       }, series);
 
-      var vafSelectBrush = d3.svg.brush()
-        .x(xAxis._scale)
-        .y(yAxis._scale)
-        .on('brushstart', function() {
-          console.log(options.id + 'sending vafselectedStart');
-          $rootScope.$broadcast('vafSelectedStart', options.id);
-        })
-        .on('brushend', function() {
-          var extent = d3.event.target.extent();
-          filterExtent(extent);
-        });
+      var getBrush = function() {
+        return d3.svg.brush()
+          .x(xAxis._scale)
+          .y(yAxis._scale)
+          .on('brushstart', function() {
+            console.log(options.id + 'sending vafselectedStart');
+            $rootScope.$broadcast('vafSelectedStart', options.id);
+          })
+          .on('brushend', function() {
+            var extent = d3.event.target.extent();
+            filterExtent(extent);
+          });
+      };
+
+      var vafSelectBrush = getBrush();
 
       chart.svg.append('g')
         .attr('class', 'brush')
@@ -119,7 +123,12 @@
       $scope.$on('vafSelectedStart', function(ngEvent, vafId) {
         if(vafId !== options.id && !vafSelectBrush.empty()) {
           console.log(options.id + ' clearing vafSelectBrush');
+          chart.svg.selectAll(".brush").remove();
           vafSelectBrush.clear();
+          
+          chart.svg.append('g')
+            .attr('class', 'brush')
+            .call(vafSelectBrush);
         }
       });
     });
