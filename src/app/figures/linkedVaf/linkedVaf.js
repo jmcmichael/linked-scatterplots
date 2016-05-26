@@ -119,6 +119,21 @@
       data: []
     };
 
+    var uiGridCustom = {
+      filter: {
+        GREATER_THAN: function (searchTerm, cellValue) {
+          if (searchTerm == '')
+            return true;
+          else return Number(cellValue) > Number(searchTerm);
+        },
+        LESS_THAN: function (searchTerm, cellValue) {
+          if (searchTerm == '')
+            return true;
+          else return Number(cellValue) < Number(searchTerm);
+        }
+      }
+    };
+
     var columnDefs = [
       {
         name: 'Cluster',
@@ -135,16 +150,19 @@
         filter: {
           condition: uiGridConstants.filter.EXACT
         },
-        enableFiltering: true
+        enableFiltering: true,
+        type: 'number'
       },
       {
         name: 'POS',
-        field: 'pos'
+        field: 'pos',
+        type: 'number'
       },
       {
         name: 'Basechange',
         field: 'basechange',
         enableFiltering: true,
+        enableSorting: false,
         filter: {
           type: uiGridConstants.filter.SELECT,
           term: null,
@@ -168,17 +186,50 @@
       {
         name: 'VAF 1',
         field: 'vaf1',
-        enableFiltering: false
+        enableFiltering: true,
+        type: 'number',
+        filters: [
+          {
+            condition: uiGridCustom.filter.GREATER_THAN,
+            placeholder: ' >'
+          },
+          {
+            condition: uiGridCustom.filter.LESS_THAN,
+            placeholder: ' <'
+          }
+        ]
       },
       {
         name: 'VAF 2',
         field: 'vaf2',
-        enableFiltering: false
+        enableFiltering: true,
+        type: 'number',
+        filters: [
+          {
+            condition: uiGridCustom.filter.GREATER_THAN,
+            placeholder: ' >'
+          },
+          {
+            condition: uiGridCustom.filter.LESS_THAN,
+            placeholder: ' <'
+          }
+        ]
       },
       {
         name: 'VAF 3',
         field: 'vaf3',
-        enableFiltering: false
+        enableFiltering: true,
+        type: 'number',
+        filters: [
+          {
+            condition: uiGridCustom.filter.GREATER_THAN,
+            placeholder: ' >'
+          },
+          {
+            condition: uiGridCustom.filter.LESS_THAN,
+            placeholder: ' <'
+          }
+        ]
       },
       {
         name: 'Effect',
@@ -197,6 +248,7 @@
       minRowsToShow: 20,
       onRegisterApi: onRegisterApi,
       enableRowSelection: true,
+      enableColumnMenus: false,
       enableFiltering: true,
       enableSelectAll: false,
       showGridFooter: false,
