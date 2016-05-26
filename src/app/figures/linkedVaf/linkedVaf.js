@@ -300,6 +300,10 @@
             toggleMuts([row]);
           });
 
+          gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+            toggleMuts(rows);
+          });
+
           selectsRegistered = true;
         } else {
           console.log('selects already registered.');
