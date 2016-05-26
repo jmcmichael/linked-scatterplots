@@ -100,15 +100,28 @@
         $rootScope.$broadcast('vafSelected', selected);
       }, series);
 
-      var brush = chart.svg.append('g')
+      var vafSelectBrush = d3.svg.brush()
+        .x(xAxis._scale)
+        .y(yAxis._scale)
+        .on('brushstart', function() {
+          console.log(options.id + 'sending vafselectedStart');
+          $rootScope.$broadcast('vafSelectedStart', options.id);
+        })
+        .on('brushend', function() {
+          var extent = d3.event.target.extent();
+          filterExtent(extent);
+        });
+
+      chart.svg.append('g')
         .attr('class', 'brush')
-        .call(d3.svg.brush()
-          .x(xAxis._scale)
-          .y(yAxis._scale)
-          .on('brushend', function() {
-            var extent = d3.event.target.extent();
-            filterExtent(extent);
-          }));
+        .call(vafSelectBrush);
+
+      $scope.$on('vafSelectedStart', function(ngEvent, vafId) {
+        if(vafId !== options.id && !vafSelectBrush.empty()) {
+          console.log(options.id + ' clearing vafSelectBrush');
+          vafSelectBrush.clear();
+        }
+      });
     });
 
     /**
