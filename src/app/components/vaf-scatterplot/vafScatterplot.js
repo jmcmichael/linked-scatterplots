@@ -88,21 +88,27 @@
         .on('mouseover', _.partial(mouseoverHandler, options.id, true))
         .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
-      // var brush = chart.svg.append('g')
-      //   .attr('class', 'brush')
-      //   .call(d3.svg.brush()
-      //     .x(xAxis._scale)
-      //     .y(yAxis._scale)
-      //     .on('brushend', _.partial(function(s) {
-      //       var extent = d3.event.target.extent();
-      //       console.log(JSON.stringify(extent));
-      //       s.shapes.classed('selected', function(d) {
-      //         var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
-      //           && extent[0][1] <= d.cy && d.cy < extent[1][1];
-      //         console.log(hit);
-      //         return hit;
-      //       });
-      //     }, series)));
+      var filterExtent = _.partial(function(series, extent) {
+        var selected = [];
+        series.shapes.classed('selected', function(d) {
+          var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
+            && extent[0][1] <= d.cy && d.cy < extent[1][1];
+          if(hit) {
+            selected.push(getMutKeyFromEvent(d));
+          }
+        });
+        $rootScope.$broadcast('vafSelected', selected);
+      }, series);
+
+      var brush = chart.svg.append('g')
+        .attr('class', 'brush')
+        .call(d3.svg.brush()
+          .x(xAxis._scale)
+          .y(yAxis._scale)
+          .on('brushend', function() {
+            var extent = d3.event.target.extent();
+            filterExtent(extent);
+          }));
     });
 
     /**

@@ -245,7 +245,7 @@
 
     vm.gridOptions = {
       columnDefs: columnDefs,
-      minRowsToShow: 20,
+      minRowsToShow: 15,
       onRegisterApi: onRegisterApi,
       enableRowSelection: true,
       enableColumnMenus: false,
@@ -382,6 +382,10 @@
         $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
           vm.mutHover = mutation;
           $scope.$apply();
+        });
+
+        $scope.$on('vafSelected', function(ngEvent, selected) {
+          console.log(selected);
         });
       });
 
