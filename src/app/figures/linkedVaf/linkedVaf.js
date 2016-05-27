@@ -375,6 +375,9 @@
         if(!_.isUndefined(chartId)) { // event comes from a chart, so we clear filters
           gridApi.grid.clearAllFilters();
         }
+        _.forEach(gridApi.grid.rows, function(row) {
+          gridApi.core.clearRowInvisible(row);
+        });
       });
 
       // filter any selected variants
