@@ -63,78 +63,79 @@
     var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
 
     $scope.$watch('options.data', function(data) {
-      series.getTooltipText = _.partial(getTooltipText, data, options);
+      if(data.length > 0) {
+        series.getTooltipText = _.partial(getTooltipText, data, options);
 
-      xAxis.overrideMax = _.isUndefined(options.xMax) ? 100 : options.xMax;
-      yAxis.overrideMax = _.isUndefined(options.yMax) ? 100 : options.yMax;
+        xAxis.overrideMax = _.isUndefined(options.xMax) ? 100 : options.xMax;
+        yAxis.overrideMax = _.isUndefined(options.yMax) ? 100 : options.yMax;
 
-      chart.data = data;
-      chart.draw(500);
+        chart.data = data;
+        chart.draw(500);
 
-      // insert brush group under(before) the chart data
-      var brushGroup = chart.svg.insert('g', '.dimple-chart')
-        .attr('class', 'brush-group')
-        .append('g')
-        .attr('class', 'brush');
+        // insert brush group under(before) the chart data
+        var brushGroup = chart.svg.insert('g', '.dimple-axis-chart')
+          .attr('class', 'brush-group')
+          .append('g')
+          .attr('class', 'brush');
 
-      // post-render styling (TODO: implement with dimple custom format?)
-      chart.svg.selectAll('circle.dimple-bubble')
-        .style('opacity', options.bubbleOpacity);
+        // post-render styling (TODO: implement with dimple custom format?)
+        chart.svg.selectAll('circle.dimple-bubble')
+          .style('opacity', options.bubbleOpacity);
 
-      // axis titles
-      xAxis.titleShape
-        .text(options.xAxis)
-        .style('font-weight', 'bold');
+        // axis titles
+        xAxis.titleShape
+          .text(options.xAxis)
+          .style('font-weight', 'bold');
 
-      yAxis.titleShape
-        .text(options.yAxis)
-        .style('font-weight', 'bold');
+        yAxis.titleShape
+          .text(options.yAxis)
+          .style('font-weight', 'bold');
 
-      series.shapes
-        .on('mouseover', _.partial(mouseoverHandler, options.id, true))
-        .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
+        series.shapes
+          .on('mouseover', _.partial(mouseoverHandler, options.id, true))
+          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true));
 
-      var filterExtent = _.partial(function(series, extent) {
-        var selected = [];
-        series.shapes.classed('selected', function(d) {
-          var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
-            && extent[0][1] <= d.cy && d.cy < extent[1][1];
-          if(hit) {
-            selected.push(getMutKeyFromEvent(d));
+        var filterExtent = _.partial(function (series, extent) {
+          var selected = [];
+          series.shapes.classed('selected', function (d) {
+            var hit = extent[0][0] <= d.cx && d.cx < extent[1][0]
+              && extent[0][1] <= d.cy && d.cy < extent[1][1];
+            if (hit) {
+              selected.push(getMutKeyFromEvent(d));
+            }
+          });
+          $rootScope.$broadcast('vafSelectEnd', selected);
+        }, series);
+
+        var getBrush = function () {
+          return d3.svg.brush()
+            .x(xAxis._scale)
+            .y(yAxis._scale)
+            .on('brushstart', function () {
+              $rootScope.$broadcast('vafSelectStart', options.id);
+            })
+            .on('brushend', function () {
+              var extent = d3.event.target.extent();
+              filterExtent(extent);
+            });
+        };
+
+        var vafSelectBrush = getBrush();
+
+        brushGroup.call(vafSelectBrush);
+
+        $scope.$on('vafSelectStart', function (ngEvent, vafId) {
+          if (vafId !== options.id && !vafSelectBrush.empty()) {
+            console.log(options.id + ' clearing vafSelectBrush');
+            chart.svg.selectAll(".brush").remove();
+            vafSelectBrush.clear();
+
+            chart.svg.append('g')
+              .attr('class', 'brush')
+              .call(vafSelectBrush);
           }
         });
-        $rootScope.$broadcast('vafSelected', selected);
-      }, series);
-
-      var getBrush = function() {
-        return d3.svg.brush()
-          .x(xAxis._scale)
-          .y(yAxis._scale)
-          .on('brushstart', function() {
-            console.log(options.id + 'sending vafselectedStart');
-            $rootScope.$broadcast('vafSelectedStart', options.id);
-          })
-          .on('brushend', function() {
-            var extent = d3.event.target.extent();
-            filterExtent(extent);
-          });
-      };
-
-      var vafSelectBrush = getBrush();
-
-      brushGroup.call(vafSelectBrush);
-
-      $scope.$on('vafSelectedStart', function(ngEvent, vafId) {
-        if(vafId !== options.id && !vafSelectBrush.empty()) {
-          console.log(options.id + ' clearing vafSelectBrush');
-          chart.svg.selectAll(".brush").remove();
-          vafSelectBrush.clear();
-
-          chart.svg.append('g')
-            .attr('class', 'brush')
-            .call(vafSelectBrush);
-        }
-      });
+      }
     });
 
     /**
