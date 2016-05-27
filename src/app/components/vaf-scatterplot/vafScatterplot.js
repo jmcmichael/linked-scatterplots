@@ -71,6 +71,12 @@
       chart.data = data;
       chart.draw(500);
 
+      // insert brush group under(before) the chart data
+      var brushGroup = chart.svg.insert('g', '.dimple-chart')
+        .attr('class', 'brush-group')
+        .append('g')
+        .attr('class', 'brush');
+
       // post-render styling (TODO: implement with dimple custom format?)
       chart.svg.selectAll('circle.dimple-bubble')
         .style('opacity', options.bubbleOpacity);
@@ -116,16 +122,14 @@
 
       var vafSelectBrush = getBrush();
 
-      chart.svg.append('g')
-        .attr('class', 'brush')
-        .call(vafSelectBrush);
+      brushGroup.call(vafSelectBrush);
 
       $scope.$on('vafSelectedStart', function(ngEvent, vafId) {
         if(vafId !== options.id && !vafSelectBrush.empty()) {
           console.log(options.id + ' clearing vafSelectBrush');
           chart.svg.selectAll(".brush").remove();
           vafSelectBrush.clear();
-          
+
           chart.svg.append('g')
             .attr('class', 'brush')
             .call(vafSelectBrush);
