@@ -279,11 +279,16 @@
 
     vm.includeAll = function() {
       setMuts(vm.gridApi.grid.rows, true);
+      _.forEach(vm.gridApi.grid.rows, function(row) {
+        vm.gridApi.core.clearRowInvisible(row);
+      });
+      $rootScope.$broadcast('clearSelection');
     };
 
     vm.includeFiltered = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, true);
+      $rootScope.$broadcast('clearSelection');
     };
 
     vm.includeFilteredOnly = function() {
@@ -291,11 +296,13 @@
       var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
       setMuts(iRows, false);
       setMuts(vRows, true);
+      $rootScope.$broadcast('clearSelection');
     };
 
     vm.excludeFiltered = function() {
       var rows = vm.gridApi.core.getVisibleRows();
       setMuts(rows, false);
+      $rootScope.$broadcast('clearSelection');
     };
 
     vm.excludeFilteredOnly = function() {
@@ -303,6 +310,7 @@
       var vRows = _.filter(vm.gridApi.grid.rows, { visible: true });
       setMuts(iRows, true);
       setMuts(vRows, false);
+      $rootScope.$broadcast('clearSelection');
     };
 
     vm.toggleCluster = function(cluster) {
@@ -331,7 +339,7 @@
       });
 
       vm.exportData = function(select) {
-        vm.gridOptions.exporterCsvFilename = 'AML31_VAF.csv'
+        vm.gridOptions.exporterCsvFilename = 'AML31_VAF.csv';
         var rows = select === 'all' ? uiGridExporterConstants.ALL : uiGridExporterConstants.VISIBLE;
         gridApi.exporter.csvExport(rows, uiGridExporterConstants.ALL);
       };
@@ -361,12 +369,42 @@
           console.log('selects already registered.');
         }
       });
+
+      // filter any selected variants
+      $scope.$on('clearSelection', function(ngEvent, chartId) {
+        if(!_.isUndefined(chartId)) { // event comes from a chart, so we clear filters
+          gridApi.grid.clearAllFilters();
+        }
+      });
+
+      // filter any selected variants
+      $scope.$on('vafSelectEnd', function(ngEvent, selected) {
+        console.log(selected);
+        var rows = _(gridApi.grid.rows)
+          .partition(function(row) {
+            return _.some(selected, {
+              chr: Number(row.entity.chr),
+              pos: Number(row.entity.pos),
+              basechange: row.entity.basechange
+            })
+          })
+          .value();
+
+        _.forEach(rows[0], function(row) {
+          gridApi.core.clearRowInvisible(row);
+        });
+
+        _.forEach(rows[1], function(row) {
+          gridApi.core.setRowInvisible(row);
+        });
+      });
+
     }
 
     $q.all([
-        dsv.tsv({ method:'GET', url: 'data/input.aml31_v1a.tsv.txt' }),
-        dsv.tsv({ method:'GET', url: 'data/metadata.tsv.txt' })
-      ])
+      dsv.tsv({ method:'GET', url: 'data/input.aml31_v1a.tsv.txt' }),
+      dsv.tsv({ method:'GET', url: 'data/metadata.tsv.txt' })
+    ])
       .then(function(dataTSV) {
         vm.data = _.map(dataTSV[0].data, function(d) {
           d.basechange = d.basechange .replace('/', '-');
@@ -382,10 +420,6 @@
         $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
           vm.mutHover = mutation;
           $scope.$apply();
-        });
-
-        $scope.$on('vafSelected', function(ngEvent, selected) {
-          console.log(selected);
         });
       });
 

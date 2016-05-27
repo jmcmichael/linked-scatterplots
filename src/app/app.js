@@ -1,7 +1,8 @@
 (function () {
   'use strict';
   //This is the basic entry point of the application
-  angular.module('linkedVafs', [
+  angular.module('linkedVafs',
+    [
       'hc.dsv',
       'linkedVaf.services',
       'linkedVaf.filters',

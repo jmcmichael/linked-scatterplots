@@ -72,12 +72,6 @@
         chart.data = data;
         chart.draw(500);
 
-        // insert brush group under(before) the chart data
-        var brushGroup = chart.svg.insert('g', '.dimple-axis-chart')
-          .attr('class', 'brush-group')
-          .append('g')
-          .attr('class', 'brush');
-
         // post-render styling (TODO: implement with dimple custom format?)
         chart.svg.selectAll('circle.dimple-bubble')
           .style('opacity', options.bubbleOpacity);
@@ -104,16 +98,27 @@
               selected.push(getMutKeyFromEvent(d));
             }
           });
-          $rootScope.$broadcast('vafSelectEnd', selected);
+          if(selected.length > 0) {
+            $rootScope.$broadcast('vafSelectEnd', selected);
+          } else {
+            $rootScope.$broadcast('clearSelection');
+          }
         }, series);
+
+
+        // insert brush group under(before) the chart data
+        var brushGroup = chart.svg.selectAll('.dimple-chart')
+          .insert('g', '.dimple-axis-group')
+          .attr('class', 'brush');
 
         var getBrush = function () {
           return d3.svg.brush()
             .x(xAxis._scale)
             .y(yAxis._scale)
             .on('brushstart', function () {
-              $rootScope.$broadcast('vafSelectStart', options.id);
+              $rootScope.$broadcast('clearSelection', options.id);
             })
+
             .on('brushend', function () {
               var extent = d3.event.target.extent();
               filterExtent(extent);
@@ -124,15 +129,14 @@
 
         brushGroup.call(vafSelectBrush);
 
-        $scope.$on('vafSelectStart', function (ngEvent, vafId) {
-          if (vafId !== options.id && !vafSelectBrush.empty()) {
-            console.log(options.id + ' clearing vafSelectBrush');
-            chart.svg.selectAll(".brush").remove();
-            vafSelectBrush.clear();
+        var clearBrush = function() {
+          vafSelectBrush.clear();
+          brushGroup.call(vafSelectBrush);
+        };
 
-            chart.svg.append('g')
-              .attr('class', 'brush')
-              .call(vafSelectBrush);
+        $scope.$on('clearSelection', function (ngEvent, vafId) {
+          if (!vafSelectBrush.empty()) {
+            clearBrush();
           }
         });
       }
