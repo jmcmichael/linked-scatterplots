@@ -37,9 +37,7 @@
     };
 
     vm.mutHover = {};
-    vm.palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
-
-    vm.includedClusters = [];
+    vm.palette = [];
 
     vm.clusterIncluded = function(cluster) {
       return _.filter(vm.data, { cluster: String(cluster) }).length > 0;
@@ -418,6 +416,12 @@
 
         var metaData = vm.metadata = dataTSV[1].data;
 
+        vm.clusters = _(vm.data)
+          .map(function(c) { return Number(c.cluster) })
+          .uniq()
+          .sortBy()
+          .value();
+
         updateCharts();
 
         $scope.$on('vafBubbleOver', function(ngEvent, chartId, d3Event, mutation) {
@@ -427,11 +431,24 @@
       });
 
     function updateCharts() {
-      var clusters = _(vm.data)
+      var includedClusters = _(vm.data)
         .map(function(c) { return Number(c.cluster) })
         .uniq()
         .sortBy()
         .value();
+
+      if (includedClusters.length > 20) {
+        console.warn('More than 20 clusters - palette colors will repeat.');
+      }
+
+      vm.palette = _.partial(function(clusters, clusterNo) {
+        if(clusters.length <= 10) {
+          var scale = d3.scale.category10();
+        } else {
+          var scale = d3.scale.category20();
+        }
+        return scale.range()[clusterNo-1];
+      }, includedClusters);
 
       var maxVaf = _.max([
         _.max(_.map(vm.data, function(d) { return Number(d.vaf1)})),
@@ -484,6 +501,7 @@
           pos: Number(mut.pos),
           basechange: mut.basechange,
           cluster: Number(mut.cluster),
+          colorKey: 'cluster' + mut.cluster,
           annotation: parseAnnotation(mut.annotation)
         }
       });
@@ -504,9 +522,7 @@
                 vaf: Number(mut[vaf]),
                 cluster: Number(mut.cluster),
                 chr: Number(mut.chr),
-                // pos: Number(mut.pos),
-                // basechange: mut.basechange,
-                // annotation: parseAnnotation(mut.annotation)
+                colorKey: 'cluster' + mut.cluster
               };
             })
             .value();

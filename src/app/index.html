@@ -59,20 +59,14 @@
             <span class="pull-right"><strong>Clusters:</strong></span>
           </div>
           <div class="col-xs-10">
-            <ul class=" cluster-key"
-                tour-step="1"
-                tour-step-title="Cluster Key"
-                tour-step-content="Clusters are indicated in the charts by the color key. Click a cluster in the key to show or hide that cluster in all charts.">
+            <ul class="cluster-key">
               <li class="cluster-item"
-                  ng-repeat="color in vm.palette"
-                  ng-click="vm.toggleCluster($index + 1)"
-                  ng-style="{ 'background-color': vm.allClusterIncluded($index + 1) ? color : '#EFEFEF', 'border-color': vm.clusterIncluded($index + 1) ? color : 'darkgrey'}"
-                  ng-class="{ 'included': vm.allClusterIncluded($index + 1), 'excluded': !vm.allClusterIncluded($index + 1)}">
-                cluster {{ $index + 1 }}
+                  ng-repeat="cluster in vm.clusters"
+                  ng-click="vm.toggleCluster(cluster)"
+                  ng-style="{ 'background-color': vm.allClusterIncluded(cluster) ? vm.palette(cluster) : '#EFEFEF', 'border-color': vm.clusterIncluded(cluster) ? vm.palette(cluster) : 'darkgrey'}"
+                  ng-class="{ 'included': vm.allClusterIncluded(cluster), 'excluded': !vm.allClusterIncluded(cluster)}">
+                cluster {{ cluster }}
               </li>
-              <!--<li>-->
-                <!--<a class="btn btn-xs btn-block btn-default">Start Tour</a>-->
-              <!--</li>-->
             </ul>
           </div>
         </div>

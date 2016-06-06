@@ -58,12 +58,23 @@
 
     var xAxis = chart.addMeasureAxis('x', 'x');
     var yAxis = chart.addMeasureAxis('y', 'y');
-    var colorAxis = chart.addColorAxis('cluster', $scope.palette);
 
-    var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange'], dimple.plot.bubble);
+    var series = chart.addSeries(['x', 'y', 'cluster', 'chr', 'pos', 'basechange', 'colorKey'], dimple.plot.bubble);
 
     $scope.$watch('options.data', function(data) {
       if(data.length > 0) {
+        // assign cluster colors
+        var clusters = _(data)
+          .map('cluster')
+          .uniq()
+          .sortBy()
+          .value();
+
+        _.forEach(clusters, function(c) {
+          console.log('assigning cluster' + c + ' to color ' + $scope.palette(c));
+          chart.assignColor('cluster' + c, $scope.palette(c));
+        });
+
         series.getTooltipText = _.partial(getTooltipText, data, options);
 
         xAxis.overrideMax = _.isUndefined(options.xMax) ? 100 : options.xMax;
