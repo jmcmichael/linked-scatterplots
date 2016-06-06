@@ -57,35 +57,48 @@
     var x = chart.addCategoryAxis('x', 'timepointLabel');
     x.addOrderRule('timepoint');
     var y = chart.addMeasureAxis('y', 'vaf');
-    var c = chart.addColorAxis('cluster', $scope.palette);
-    c.overrideMax = options.clusterMax;
-    c.overrideMin = 1;
 
-    var series = chart.addSeries('series', dimple.plot.line);
+    // c.overrideMax = options.clusterMax;
+    // c.overrideMin = 1;
+
+    var series = chart.addSeries(['series', 'colorKey'], dimple.plot.line);
     series.lineMarkers = true;
 
     $scope.$watch('options.data', function(data) {
-      series.getTooltipText = _.partial(getTooltipText, data, options);
+      if(data.length > 0) {
+        var clusters = _(data)
+          .map('cluster')
+          .uniq()
+          .sortBy()
+          .value();
 
-      chart.data = data;
-      chart.draw(500);
+        _.forEach(clusters, function(c) {
+          console.log('assigning cluster' + c + ' to color ' + $scope.palette(c));
+          chart.assignColor('cluster' + c, $scope.palette(c));
+        });
 
-      // post-render styling (TODO: implement with dimple custom format?)
-      chart.svg.selectAll('path.dimple-line')
-        .style('opacity', options.pathOpacity);
+        series.getTooltipText = _.partial(getTooltipText, data, options);
 
-      // axis titles
-      x.titleShape
-        .text(options.xAxis)
-        .style('font-weight', 'bold');
+        chart.data = data;
+        chart.draw(500);
 
-      y.titleShape
-        .text(options.yAxis)
-        .style('font-weight', 'bold');
+        // post-render styling (TODO: implement with dimple custom format?)
+        chart.svg.selectAll('path.dimple-line')
+          .style('opacity', options.pathOpacity);
 
-      chart.svg.selectAll('circle.dimple-marker')
-        .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
-        .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
+        // axis titles
+        x.titleShape
+          .text(options.xAxis)
+          .style('font-weight', 'bold');
+
+        y.titleShape
+          .text(options.yAxis)
+          .style('font-weight', 'bold');
+
+        chart.svg.selectAll('circle.dimple-marker')
+          .on('mouseover', _.partial(mouseoverHandler, options.id, true, series))
+          .on('mouseleave', _.partial(mouseleaveHandler, options.id, true, series));
+      }
     });
 
     // overwrite mouse events w/ functions that broadcast ng events
@@ -167,7 +180,7 @@
 
     function getMutFromEvent(d3Event) {
       var keys = _(_.trimRight(d3Event.key, '_'))
-        .split('_')
+        .split('/')
         .dropRight(1)
         .split('|')
         .value(); // pull chr, pos, basechange
