@@ -21,7 +21,7 @@
 
   angular.module('linkedVaf.services', []);
   angular.module('linkedVaf.filters', []);
-  angular.module('linkedVaf.figures', ['bm.uiTour']);
+  angular.module('linkedVaf.figures', []);
   angular.module('linkedVaf.forms', []);
 
 

@@ -5,14 +5,8 @@
     .config(linkedVafConfig);
 
   // @ngInject
-  function linkedVafConfig(TourConfigProvider) {
-    var tourConfig = {
-      appendToBody: true
-    };
+  function linkedVafConfig() {
 
-    _.forEach(tourConfig, function(option, value) {
-      TourConfigProvider.set(option, value);
-    });
   }
 
   // @ngInject
