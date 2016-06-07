@@ -8,21 +8,21 @@
     <title>AML31 Figures</title>
 
     <!-- inject:vendor:css -->
-    <link rel="stylesheet" href="/angular-hotkeys/build/hotkeys.css">
+    <link rel="stylesheet" href="/angular-growl-v2/build/angular-growl.css">
+    <!-- endinject -->
 
     <!-- CDN CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/angular-ui/bower-ui-grid/master/ui-grid.min.css"/>
 
-    <!-- endinject -->
     <!-- inject:css -->
     <link rel="stylesheet" href="/css/app.css">
     <link rel="stylesheet" href="/css/figures/linkedVaf/linkedVaf.css">
     <!-- endinject -->
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.rawgit.com/angular-ui/bower-ui-grid/master/ui-grid.min.css"/>
   </head>
   <body>
+    <div growl></div>
     <div class="linkedVaf" ng-controller="LinkedVafController">
 
       <div class="container">
@@ -77,39 +77,31 @@
 
         <div class="row chart-ui">
           <div class="col-xs-2">
-            <ul class="button-menu"
-                tour-step="2"
-                tour-step-title="Variant Filtering Controls"
-                tour-step-content="With the data grid to the right, these buttons control the variants displayed in the charts.">
-              <li
-                tour-step="3"
-                tour-step-title="Include All Button"
-                tour-step-content="Click this button to include all variants in the charts.">
+            <ul class="button-menu">
+              <li>
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.includeAll()"
                    title="Show all variants">Include All</a>
               </li>
-              <li tour-step="3"
-                  tour-step-title="Include Filtered"
-                  tour-step-content="Add data grid's filtered results to the currently displayed variants.">
+              <li>
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.includeFiltered()"
-                   title="Add currently filtered variants to charts">Include Filtered</a>
+                   title="Add currently displayed variants to charts">Include Filtered</a>
               </li>
               <li>
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.excludeFiltered()"
-                   title="Remove currently filtered variants from charts">Exclude Filtered</a>
+                   title="Remove currently displayed variants from charts">Exclude Filtered</a>
               </li>
               <li>
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.includeFilteredOnly()"
-                   title="Include only filtered variants in charts">Include Only Filtered</a>
+                   title="Include only displayed variants in charts">Include Only Filtered</a>
               </li>
               <li>
                 <a class="btn btn-xs btn-default btn-block"
                    ng-click="vm.excludeFilteredOnly()"
-                   title="Include only non-filtered variants in charts">Exclude Only Filtered</a>
+                   title="Include only undisplayed variants in charts">Exclude Only Filtered</a>
               </li>
             </ul>
             <div class="info">
@@ -187,17 +179,21 @@
     <!-- inject:vendor:js -->
     <script src="/angular/angular.js"></script>
     <script src="/d3/d3.js"></script>
-    <script src="/lodash/lodash.js"></script>
     <script src="/dimple/dist/dimple.latest.js"></script>
     <script src="/angular-dsv/angular-dsv.js"></script>
+    <script src="/angular-animate/angular-animate.js"></script>
+    <script src="/angular-growl-v2/build/angular-growl.js"></script>
     <!-- endinject -->
 
     <!-- CDN JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.13.1/lodash.min.js"></script>
+    <!--<script src="https://cdn.rawgit.com/lodash/lodash-migrate/master/dist/lodash-migrate.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/3.1.1/ui-grid.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.20/pdfmake.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.20/pdfmake.min.js"></script>-->
     <script src="https://cdn.rawgit.com/angular-ui/bower-ui-grid/master/ui-grid.min.js"></script>p
     <script src="https://cdn.rawgit.com/bpampuch/pdfmake/master/build/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.3/ui-bootstrap-tpls.min.js"></script>
+
     <!-- inject:js -->
     <script src="/app.js"></script>
     <script src="/figures/linkedVaf/linkedVaf.js"></script>

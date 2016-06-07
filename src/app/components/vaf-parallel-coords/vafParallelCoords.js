@@ -179,7 +179,7 @@
     $scope.$on('vafBubbleLeave', _.partial(varBubbleLeaveHandler, chart));
 
     function getMutFromEvent(d3Event) {
-      var keys = _(_.trimRight(d3Event.key, '_'))
+      var keys = _(_.trimEnd(d3Event.key, '_'))
         .split('/')
         .dropRight(1)
         .split('|')

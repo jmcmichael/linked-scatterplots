@@ -213,7 +213,7 @@
     }
 
     function getMutKeyFromEvent(d3Event) {
-      var keys = _(_.trimRight(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
+      var keys = _(_.trimEnd(d3Event.key, '_')).split('/').slice(3,6).value(); // pull chr, pos, basechange
       return { chr: Number(keys[0]), pos: Number(keys[1]), basechange: keys[2] };
     }
 

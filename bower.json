@@ -21,13 +21,19 @@
   "dependencies": {
     "angular": "latest",
     "d3": "~3.5.6",
-    "lodash": "~3.10.0",
     "dimple": "https://github.com/jmcmichael/dimple.git",
     "angular-dsv": "^1.0.0",
-    "angular-ui-tour": "~0.5.4"
+    "angular-animate": "~1.5.6",
+    "angular-growl-v2": "~0.7.9"
   },
   "devDependencies": {},
   "overrides": {
+    "lodash": {
+      "main": "dist/lodash.min.js"
+    },
+    "lodash-migrate": {
+      "main": "dist/lodash-migrate.min.js"
+    },
     "d3-legend": {
       "main": [
         "d3-legend.js"

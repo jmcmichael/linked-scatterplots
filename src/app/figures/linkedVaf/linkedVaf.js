@@ -12,7 +12,7 @@
   // @ngInject
   function LinkedVafController($scope, $rootScope, $q,
                                uiGridConstants, uiGridExporterConstants,
-                               d3, dsv, _) {
+                               d3, dsv, _, growl) {
     console.log('LinkedVafController loaded.');
     var vm = $scope.vm = {};
 
@@ -96,7 +96,7 @@
       height: 380,
       yMax: 100,
       xMax: 0,
-      title: 'Variant Allele Frequency vs. Treatement Timepoint',
+      title: 'Variant Allele Frequency vs. Treatment Timepoint',
       xAxis: 'Treatment Timepoint',
       yAxis: 'Variant Allele Frequency',
       margin: {
@@ -279,6 +279,10 @@
 
     vm.includeFiltered = function() {
       var rows = vm.gridApi.core.getVisibleRows();
+      if(rows.length === 0) {
+        growl.info("No filtered rows, no action taken.");
+        return;
+      }
       setMuts(rows, true);
       $rootScope.$broadcast('clearSelection');
     };
@@ -342,7 +346,7 @@
 
         if (!selectsRegistered) {
           // mark all rows as selected
-          var rowEntities = _.pluck(gridApi.grid.rows, 'entity');
+          var rowEntities = _.map(gridApi.grid.rows, 'entity');
           _.forEach(rowEntities, function(rowEntity) {
             gridApi.selection.selectRow(rowEntity);
           });
@@ -556,22 +560,34 @@
     }
 
     function setMuts(rows, selected) {
-      _.forEach(rows, function(row) {
-        if(row.isSelected && selected === false) {
-          _.remove(vm.data, getMutFromRow(row));
-          row.setSelected(false);
-        } else if(!row.isSelected && selected === true) {
-          var d = _.find(vm.data, getMutFromRow(row));
-          if(_.isUndefined(d)) {
-            d = _.find(vm.originalData, getMutFromRow(row));
-            vm.data.push(d);
-            row.setSelected(true)
-          } else {
-            row.setSelected(true)
+      var rowEntities = _(rows).map('entity').value();
+      // check to see if all muts would be hidden
+      var allRows = selected === false &&
+        rowEntities.length === vm.data.length &&
+        _.isEqualWith(vm.data, rowEntities, function(r1, r2) {
+          return r1.chr === r2.chr && r1.pos === r2.pos && r1.basechange === r2.basechange;
+        });
+
+      if(allRows) {
+        growl.warning('Action would leave no rows remaining. Aborting.');
+      } else {
+        _.forEach(rows, function (row) {
+          if (row.isSelected && selected === false) {
+            _.remove(vm.data, getMutFromRow(row));
+            row.setSelected(false);
+          } else if (!row.isSelected && selected === true) {
+            var d = _.find(vm.data, getMutFromRow(row));
+            if (_.isUndefined(d)) {
+              d = _.find(vm.originalData, getMutFromRow(row));
+              vm.data.push(d);
+              row.setSelected(true)
+            } else {
+              row.setSelected(true)
+            }
           }
-        }
-      });
-      updateCharts();
+        });
+        updateCharts();
+      }
     }
 
     function toggleMuts(rows) {

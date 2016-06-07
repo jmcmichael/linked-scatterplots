@@ -4,6 +4,8 @@
   angular.module('linkedVafs',
     [
       'hc.dsv',
+      'ngAnimate',
+      'angular-growl',
       'linkedVaf.services',
       'linkedVaf.filters',
       'linkedVaf.forms',
@@ -26,11 +28,12 @@
 
 
   // @ngInject
-  function appRun($rootScope) {
+  function appRun() {
   }
 
   // @ngInject
-  function appConfig($compileProvider) {
+  function appConfig(growlProvider,$compileProvider) {
+    growlProvider.globalTimeToLive(5000);
     $compileProvider.debugInfoEnabled(false);
   }
 })();
